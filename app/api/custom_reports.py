@@ -30,7 +30,9 @@ def create_custom_report(
             provider=app_config['ai']['provider'],
             api_key=app_config['ai']['api_key'],
             base_url=app_config['ai']['base_url'],
-            model=app_config['ai']['model']
+            model=app_config['ai']['model'],
+            timeout=app_config['ai'].get('timeout', 120),
+            max_retries=app_config['ai'].get('max_retries', 3)
         )
         
         # 创建报告生成器
@@ -97,17 +99,27 @@ def create_custom_report(
             overall_summary="个性化报告"
         )
         
-        # 生成PDF
-        pdf_path = report_generator.generate_pdf(
-            html_content=html_content,
-            report_date=config.report_date
-        )
+        # 生成 PDF（后台生成，但前端暂不显示）
+        pdf_path = ""
+        try:
+            report_data_with_summary = {
+                'categories': report_data['categories'],
+                'overall_summary': "个性化报告"
+            }
+            pdf_path = report_generator.generate_pdf(
+                html_content=html_content,
+                report_date=config.report_date,
+                report_data=report_data_with_summary
+            )
+        except Exception as e:
+            # PDF 生成失败不影响主流程
+            pass
         
         return CustomReportResponse(
             success=True,
             message="个性化报告生成成功",
             html_content=html_content,
-            pdf_path=pdf_path
+            pdf_path=""  # 前端暂不显示 PDF 路径
         )
         
     except Exception as e:

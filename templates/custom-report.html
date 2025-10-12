@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个性化报告 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .config-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input[type="date"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .source-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .source-checkbox:hover {
+            background: #e9ecef;
+        }
+        
+        .source-checkbox input {
+            margin-right: 0.5rem;
+        }
+        
+        .source-checkbox label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .category-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .select-all-btn {
+            font-size: 12px;
+            padding: 0.25rem 0.75rem;
+            margin-left: auto;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .result-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .result-panel.show {
+            display: block;
+        }
+        
+        .report-preview {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html" class="active">个性化报告</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>📝 个性化报告生成</h2>
+            <p>自定义选择信息源和提示词，生成专属报告</p>
+        </div>
+
+        <div class="config-panel">
+            <form id="customReportForm">
+                <!-- 日期选择 -->
+                <div class="form-section">
+                    <h3>📅 报告日期</h3>
+                    <div class="form-group">
+                        <label for="reportDate">选择日期</label>
+                        <input type="date" id="reportDate" required>
+                        <div class="help-text">选择要生成报告的日期</div>
+                    </div>
+                </div>
+
+                <!-- 信息源选择 -->
+                <div class="form-section">
+                    <h3>📰 选择信息源</h3>
+                    <div id="sourcesContainer">
+                        <div class="loading">加载信息源...</div>
+                    </div>
+                </div>
+
+                <!-- 提示词配置 -->
+                <div class="form-section">
+                    <h3>💬 提示词配置（可选）</h3>
+                    <div class="form-group">
+                        <label for="summaryPrompt">文章摘要提示词</label>
+                        <textarea id="summaryPrompt" placeholder="留空使用默认提示词"></textarea>
+                        <div class="help-text">自定义AI生成文章摘要的提示词</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportPrompt">报告总结提示词</label>
+                        <textarea id="reportPrompt" placeholder="留空使用默认提示词"></textarea>
+                        <div class="help-text">自定义AI生成报告总结的提示词</div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
+                    <button type="submit" class="btn btn-primary">生成报告</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 结果面板 -->
+        <div id="resultPanel" class="result-panel">
+            <h3>📊 生成结果</h3>
+            <div class="action-buttons" style="margin-bottom: 1rem;">
+                <button class="btn btn-secondary" onclick="downloadReport()">下载 HTML</button>
+                <button class="btn btn-secondary" onclick="viewReport()">在新窗口查看</button>
+            </div>
+            <div id="reportPreview" class="report-preview"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let sources = [];
+        let generatedReport = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认日期为昨天
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('reportDate').valueAsDate = yesterday;
+            
+            // 加载信息源
+            loadSources();
+            
+            // 表单提交
+            document.getElementById('customReportForm').addEventListener('submit', handleSubmit);
+        });
+
+        async function loadSources() {
+            const container = document.getElementById('sourcesContainer');
+            
+            try {
+                const response = await fetch('/sources/');
+                const data = await response.json();
+                
+                sources = data.sources || [];
+                
+                // 按层面分组
+                const sourcesByCategory = {
+                    '政治': [],
+                    '经济': [],
+                    '技术': [],
+                    '金融科技': []
+                };
+                
+                sources.forEach(source => {
+                    if (sourcesByCategory[source.category]) {
+                        sourcesByCategory[source.category].push(source);
+                    }
+                });
+                
+                // 渲染信息源
+                container.innerHTML = '';
+                for (const [category, categorySources] of Object.entries(sourcesByCategory)) {
+                    if (categorySources.length > 0) {
+                        container.appendChild(renderCategoryGroup(category, categorySources));
+                    }
+                }
+                
+            } catch (error) {
+                container.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+
+        function renderCategoryGroup(category, sources) {
+            const group = document.createElement('div');
+            group.className = 'category-group';
+            
+            const icons = {
+                '政治': '🏛️',
+                '经济': '💰',
+                '技术': '🔬',
+                '金融科技': '💳'
+            };
+            
+            group.innerHTML = `
+                <div class="category-title">
+                    ${icons[category]} ${category}
+                    <button type="button" class="btn btn-secondary btn-sm select-all-btn" 
+                            onclick="toggleCategory('${category}')">全选/取消</button>
+                </div>
+                <div class="sources-grid" id="category-${category}">
+                    ${sources.map(source => `
+                        <div class="source-checkbox">
+                            <input type="checkbox" id="source-${source.id}" 
+                                   value="${source.id}" 
+                                   ${source.enabled ? 'checked' : ''}>
+                            <label for="source-${source.id}">${source.name}</label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            return group;
+        }
+
+        function toggleCategory(category) {
+            const container = document.getElementById(`category-${category}`);
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const reportDate = document.getElementById('reportDate').value;
+            const summaryPrompt = document.getElementById('summaryPrompt').value;
+            const reportPrompt = document.getElementById('reportPrompt').value;
+            
+            // 获取选中的信息源
+            const selectedSources = Array.from(
+                document.querySelectorAll('input[type="checkbox"]:checked')
+            ).map(cb => parseInt(cb.value));
+            
+            if (selectedSources.length === 0) {
+                showError('请至少选择一个信息源');
+                return;
+            }
+            
+            try {
+                showLoading('正在生成个性化报告，请稍候...');
+                
+                const response = await fetch('/custom-reports/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_date: reportDate,
+                        source_ids: selectedSources,
+                        summary_prompt: summaryPrompt || null,
+                        report_prompt: reportPrompt || null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                hideLoading();
+                
+                if (result.success) {
+                    generatedReport = result;
+                    displayReport(result);
+                    showSuccess('报告生成成功！');
+                } else {
+                    showError('报告生成失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                hideLoading();
+                showError('请求失败: ' + error.message);
+            }
+        }
+
+        function displayReport(result) {
+            const panel = document.getElementById('resultPanel');
+            const preview = document.getElementById('reportPreview');
+            
+            preview.innerHTML = result.html_content;
+            panel.classList.add('show');
+            
+            // 滚动到结果
+            panel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadReport() {
+            if (!generatedReport) return;
+            
+            const blob = new Blob([generatedReport.html_content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `custom_report_${document.getElementById('reportDate').value}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function viewReport() {
+            if (!generatedReport) return;
+            
+            const newWindow = window.open();
+            newWindow.document.write(generatedReport.html_content);
+            newWindow.document.close();
+        }
+
+        function resetForm() {
+            document.getElementById('customReportForm').reset();
+            document.getElementById('resultPanel').classList.remove('show');
+            generatedReport = null;
+            
+            // 重新设置默认日期
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('reportDate').valueAsDate = yesterday;
+        }
+    </script>
+</body>
+</html>

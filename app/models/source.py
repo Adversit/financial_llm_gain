@@ -21,7 +21,7 @@ class Source(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间")
     
     # 关系
-    articles = relationship("Article", back_populates="source", cascade="all, delete-orphan")
+    articles = relationship("Article", back_populates="source")
     
     def __repr__(self):
         return f"<Source(id={self.id}, name='{self.name}', category='{self.category}', type='{self.type}')>"

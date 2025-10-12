@@ -236,12 +236,21 @@ class CrawlerService:
         Returns:
             按层面分组的字典
         """
+        from sqlalchemy.orm import joinedload
+        
         grouped = {
             '政治': [],
             '经济': [],
             '技术': [],
             '金融科技': []
         }
+        
+        # 如果文章列表不为空，重新查询以确保加载关系
+        if articles:
+            article_ids = [article.id for article in articles]
+            articles = self.db.query(ArticleModel).options(
+                joinedload(ArticleModel.source)
+            ).filter(ArticleModel.id.in_(article_ids)).all()
         
         for article in articles:
             category = article.source.category

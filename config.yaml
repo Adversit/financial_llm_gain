@@ -32,7 +32,7 @@ ai:
   # 请求参数
   temperature: 0.7
   max_tokens: 2000
-  timeout: 30
+  timeout: 120  # 增加到120秒，适应较长的总结生成
   max_retries: 3
 
 # 邮件配置
@@ -49,6 +49,13 @@ scheduler:
   daily_report_time: "08:00"
   timezone: "Asia/Shanghai"
 
+# 报告配置
+report:
+  # PDF 生成配置
+  generate_pdf: true  # 是否生成 PDF（后台生成）
+  show_pdf_in_frontend: false  # 是否在前端显示 PDF 下载链接
+  attach_pdf_in_email: false  # 是否在邮件中附加 PDF
+
 # 信息源配置
 sources:
   # RSS源
@@ -64,8 +71,8 @@ sources:
       enabled: true
     
     - name: "第一财经"
-      category: "技术"
-      url: "https://www.yicai.com/rss/news.xml"
+      category: "经济"
+      url: "https://www.yicai.com/rss/index.xml"
       enabled: true
   
   # RSSHub源

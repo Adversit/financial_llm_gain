@@ -58,6 +58,10 @@ def _override_from_env(config: Dict[str, Any]) -> Dict[str, Any]:
         config['ai']['base_url'] = os.getenv('AI_BASE_URL')
     if os.getenv('AI_MODEL'):
         config['ai']['model'] = os.getenv('AI_MODEL')
+    if os.getenv('AI_TIMEOUT'):
+        config['ai']['timeout'] = int(os.getenv('AI_TIMEOUT'))
+    if os.getenv('AI_MAX_RETRIES'):
+        config['ai']['max_retries'] = int(os.getenv('AI_MAX_RETRIES'))
     
     # 邮件配置
     if os.getenv('SMTP_SERVER'):

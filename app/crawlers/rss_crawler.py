@@ -98,7 +98,17 @@ class RSSCrawler(BaseCrawler):
         elif hasattr(entry, 'description'):
             content = entry.description
         
+        # 清理HTML标签
+        if content:
+            from bs4 import BeautifulSoup
+            content = BeautifulSoup(content, 'html.parser').get_text(strip=True)
+        
         content = self.clean_text(content)
+        
+        # 如果内容为空，使用标题作为内容（避免Article验证失败）
+        if not content:
+            content = title
+            self.logger.debug(f"RSS条目没有内容，使用标题作为内容: {title[:50]}")
         
         # 提取发布时间
         publish_time = None
@@ -107,6 +117,10 @@ class RSSCrawler(BaseCrawler):
         elif hasattr(entry, 'updated_parsed') and entry.updated_parsed:
             publish_time = datetime.fromtimestamp(mktime(entry.updated_parsed))
         
+        # 如果 RSS 没有提供日期，尝试从 URL 中提取
+        if not publish_time and link:
+            publish_time = self._extract_date_from_url(link)
+        
         return Article(
             title=title,
             link=link,
@@ -114,3 +128,52 @@ class RSSCrawler(BaseCrawler):
             publish_time=publish_time,
             source_name=self.source_name
         )
+    
+    def _extract_date_from_url(self, url: str) -> datetime:
+        """
+        从 URL 中提取日期
+        
+        支持的格式:
+        - /2022-12/10/ (新华社格式)
+        - /2022/12/10/
+        - /20221210/
+        
+        Args:
+            url: 文章 URL
+        
+        Returns:
+            datetime 对象，如果无法提取则返回 None
+        """
+        import re
+        
+        # 格式1: /YYYY-MM/DD/ (新华社)
+        pattern1 = r'/(\d{4})-(\d{1,2})/(\d{1,2})/'
+        match = re.search(pattern1, url)
+        if match:
+            year, month, day = match.groups()
+            try:
+                return datetime(int(year), int(month), int(day))
+            except ValueError:
+                pass
+        
+        # 格式2: /YYYY/MM/DD/
+        pattern2 = r'/(\d{4})/(\d{1,2})/(\d{1,2})/'
+        match = re.search(pattern2, url)
+        if match:
+            year, month, day = match.groups()
+            try:
+                return datetime(int(year), int(month), int(day))
+            except ValueError:
+                pass
+        
+        # 格式3: /YYYYMMDD/
+        pattern3 = r'/(\d{8})/'
+        match = re.search(pattern3, url)
+        if match:
+            date_str = match.group(1)
+            try:
+                return datetime.strptime(date_str, '%Y%m%d')
+            except ValueError:
+                pass
+        
+        return None

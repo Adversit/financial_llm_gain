@@ -20,7 +20,7 @@ class Article(Base):
     
     # 关系
     source = relationship("Source", back_populates="articles")
-    summary = relationship("Summary", back_populates="article", uselist=False, cascade="all, delete-orphan")
+    summaries = relationship("Summary", back_populates="article", cascade="all, delete-orphan")
     
     # 索引
     __table_args__ = (

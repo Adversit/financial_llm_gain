@@ -54,13 +54,13 @@ class BaseCrawler(ABC):
         """
         pass
     
-    def validate_content(self, content: str, min_length: int = 100) -> bool:
+    def validate_content(self, content: str, min_length: int = 50) -> bool:
         """
         验证内容有效性（字数检查）
         
         Args:
             content: 文章内容
-            min_length: 最小字数要求
+            min_length: 最小字数要求（默认50字）
         
         Returns:
             是否有效
@@ -73,7 +73,7 @@ class BaseCrawler(ABC):
         is_valid = len(clean_content) >= min_length
         
         if not is_valid:
-            self.logger.warning(
+            self.logger.debug(
                 f"内容长度不足: {len(clean_content)} < {min_length}"
             )
         

@@ -1,7 +1,9 @@
 """FastAPI应用主入口"""
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 
 from app.config import get_config
@@ -81,18 +83,57 @@ app.include_router(sources.router)
 app.include_router(emails.router)
 app.include_router(custom_reports.router)
 
+# 导入并注册文章API
+from app.api import articles
+app.include_router(articles.router)
+
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# 配置模板
+templates = Jinja2Templates(directory="templates")
 
-@app.get("/")
-def root():
-    """根路径"""
-    return {
-        "message": "欢迎使用金融日报系统",
-        "version": "1.0.0",
-        "docs": "/docs"
-    }
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    """主页"""
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/sources.html", response_class=HTMLResponse)
+async def sources_page(request: Request):
+    """信息源管理页面"""
+    return templates.TemplateResponse("sources.html", {"request": request})
+
+
+@app.get("/emails.html", response_class=HTMLResponse)
+async def emails_page(request: Request):
+    """邮件管理页面"""
+    return templates.TemplateResponse("emails.html", {"request": request})
+
+
+@app.get("/reports.html", response_class=HTMLResponse)
+async def reports_page(request: Request):
+    """报告查看页面"""
+    return templates.TemplateResponse("report.html", {"request": request})
+
+
+@app.get("/report-detail.html", response_class=HTMLResponse)
+async def report_detail_page(request: Request):
+    """报告详情页面"""
+    return templates.TemplateResponse("report-detail.html", {"request": request})
+
+
+@app.get("/articles.html", response_class=HTMLResponse)
+async def articles_page(request: Request):
+    """文章列表页面"""
+    return templates.TemplateResponse("articles.html", {"request": request})
+
+
+@app.get("/custom-report.html", response_class=HTMLResponse)
+async def custom_report_page(request: Request):
+    """个性化报告页面"""
+    return templates.TemplateResponse("custom-report.html", {"request": request})
 
 
 @app.get("/health")

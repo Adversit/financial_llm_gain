@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .articles-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .article-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .article-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .article-title a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .article-title a:hover {
+            text-decoration: underline;
+        }
+        
+        .category-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
+        }
+        
+        .category-badge.political { background: #f5576c; }
+        .category-badge.economic { background: #00f2fe; }
+        .category-badge.technical { background: #38f9d7; }
+        .category-badge.fintech { background: #fee140; color: #333; }
+        
+        .article-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        
+        .article-summary {
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        
+        .article-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .keyword {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .stats-bar {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-info {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .back-button {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="back-button">
+            <button class="btn btn-secondary" onclick="history.back()">← 返回</button>
+        </div>
+
+        <div class="page-header">
+            <h2 id="pageTitle">文章列表</h2>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label>日期:</label>
+                <input type="date" id="dateFilter" onchange="loadArticles()">
+            </div>
+            <div class="filter-group">
+                <label>层面:</label>
+                <select id="categoryFilter" onchange="filterArticles()">
+                    <option value="">全部</option>
+                    <option value="政治">🏛️ 政治</option>
+                    <option value="经济">💰 经济</option>
+                    <option value="技术">🔬 技术</option>
+                    <option value="金融科技">💳 金融科技</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>信息源:</label>
+                <select id="sourceFilter" onchange="filterArticles()">
+                    <option value="">全部</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>搜索:</label>
+                <input type="text" id="searchInput" placeholder="搜索标题或内容..." 
+                       oninput="debounceSearch()">
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stats-info">
+                共 <strong id="totalCount">0</strong> 篇文章
+                <span id="filteredInfo"></span>
+            </div>
+            <div>
+                <button class="btn btn-secondary btn-sm" onclick="exportArticles()">导出</button>
+            </div>
+        </div>
+
+        <div id="articlesList" class="articles-grid">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let allArticles = [];
+        let filteredArticles = [];
+        
+        const categoryClasses = {
+            '政治': 'political',
+            '经济': 'economic',
+            '技术': 'technical',
+            '金融科技': 'fintech'
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const date = getUrlParameter('date');
+            if (date) {
+                document.getElementById('dateFilter').value = date;
+                document.getElementById('pageTitle').textContent = `文章列表 - ${date}`;
+            } else {
+                // 默认显示昨天
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                document.getElementById('dateFilter').valueAsDate = yesterday;
+            }
+            
+            loadArticles();
+        });
+
+        async function loadArticles() {
+            const date = document.getElementById('dateFilter').value;
+            if (!date) return;
+            
+            const container = document.getElementById('articlesList');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch(`/articles/?date=${date}`);
+                const data = await response.json();
+                
+                allArticles = data.articles || [];
+                filteredArticles = allArticles;
+                
+                // 更新信息源下拉列表
+                updateSourceFilter();
+                
+                // 显示文章
+                displayArticles();
+                
+                // 更新标题
+                document.getElementById('pageTitle').textContent = `文章列表 - ${date}`;
+                
+            } catch (error) {
+                container.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+
+        function updateSourceFilter() {
+            const sourceFilter = document.getElementById('sourceFilter');
+            const sources = [...new Set(allArticles.map(a => a.source_name))].sort();
+            
+            sourceFilter.innerHTML = '<option value="">全部</option>';
+            sources.forEach(source => {
+                const option = document.createElement('option');
+                option.value = source;
+                option.textContent = source;
+                sourceFilter.appendChild(option);
+            });
+        }
+
+        function filterArticles() {
+            const category = document.getElementById('categoryFilter').value;
+            const source = document.getElementById('sourceFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredArticles = allArticles.filter(article => {
+                if (category && article.source_category !== category) return false;
+                if (source && article.source_name !== source) return false;
+                if (search) {
+                    const searchText = (article.title + ' ' + (article.summary || '')).toLowerCase();
+                    if (!searchText.includes(search)) return false;
+                }
+                return true;
+            });
+            
+            displayArticles();
+        }
+
+        const debounceSearch = debounce(filterArticles, 300);
+
+        function displayArticles() {
+            const container = document.getElementById('articlesList');
+            const totalCount = document.getElementById('totalCount');
+            const filteredInfo = document.getElementById('filteredInfo');
+            
+            totalCount.textContent = allArticles.length;
+            
+            if (filteredArticles.length < allArticles.length) {
+                filteredInfo.textContent = `（筛选后 ${filteredArticles.length} 篇）`;
+            } else {
+                filteredInfo.textContent = '';
+            }
+            
+            if (filteredArticles.length === 0) {
+                container.innerHTML = '<div class="empty-state">没有找到文章</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredArticles.map(article => renderArticle(article)).join('');
+        }
+
+        function renderArticle(article) {
+            const keywords = article.keywords ? JSON.parse(article.keywords) : [];
+            const categoryClass = categoryClasses[article.source_category] || '';
+            
+            return `
+                <div class="article-item">
+                    <div class="article-header">
+                        <div class="article-title">
+                            <a href="${article.link}" target="_blank">${article.title}</a>
+                        </div>
+                        <span class="category-badge ${categoryClass}">${article.source_category}</span>
+                    </div>
+                    <div class="article-meta">
+                        <span>📰 ${article.source_name}</span>
+                        <span>⏰ ${article.publish_time ? formatDateTime(article.publish_time) : '未知'}</span>
+                    </div>
+                    ${article.summary ? `
+                        <div class="article-summary">${article.summary}</div>
+                    ` : ''}
+                    ${keywords.length > 0 ? `
+                        <div class="article-keywords">
+                            ${keywords.map(kw => `<span class="keyword">${kw}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function exportArticles() {
+            const date = document.getElementById('dateFilter').value;
+            window.open(`/articles/export?date=${date}&format=csv`, '_blank');
+        }
+    </script>
+</body>
+</html>

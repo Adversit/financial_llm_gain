@@ -47,6 +47,7 @@ class EmailSender:
         report_date: date,
         html_content: str,
         pdf_path: Optional[str] = None,
+        attach_pdf: bool = False,
         max_retries: int = 3
     ) -> bool:
         """
@@ -57,6 +58,7 @@ class EmailSender:
             report_date: 报告日期
             html_content: HTML格式的报告内容
             pdf_path: PDF附件路径（可选）
+            attach_pdf: 是否附加 PDF（默认 False，暂不发送）
             max_retries: 最大重试次数
         
         Returns:
@@ -77,7 +79,7 @@ class EmailSender:
                     recipients=recipients,
                     subject=subject,
                     html_content=html_content,
-                    pdf_path=pdf_path
+                    pdf_path=pdf_path if attach_pdf else None  # 根据参数决定是否附加 PDF
                 )
                 
                 # 发送邮件

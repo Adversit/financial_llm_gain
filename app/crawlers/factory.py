@@ -117,7 +117,7 @@ class CrawlerFactory:
     def _class_to_module(class_name: str) -> str:
         """
         将类名转换为模块名
-        例如: MIITCrawler -> miit_crawler
+        例如: MIITCrawler -> miit_crawler, CSRCCrawler -> csrc_crawler
         
         Args:
             class_name: 类名
@@ -130,10 +130,14 @@ class CrawlerFactory:
             class_name = class_name[:-7]
         
         # 转换为snake_case
+        # 处理连续大写字母（如MIIT, CSRC）
         result = []
         for i, char in enumerate(class_name):
-            if char.isupper() and i > 0:
-                result.append('_')
+            if char.isupper():
+                # 如果不是第一个字符，且前一个字符不是大写，或者下一个字符是小写
+                if i > 0 and (not class_name[i-1].isupper() or 
+                             (i < len(class_name) - 1 and class_name[i+1].islower())):
+                    result.append('_')
             result.append(char.lower())
         
         return ''.join(result) + '_crawler'

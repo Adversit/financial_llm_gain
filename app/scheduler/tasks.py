@@ -122,7 +122,7 @@ class TaskScheduler:
                 report_date=target_date,
                 generate_category_summaries=True
             )
-            self.logger.info(f"报告生成完成: {report.pdf_path}")
+            self.logger.info(f"报告生成完成")
             
             # 4. 邮件发送
             self.logger.info("步骤 4/5: 邮件发送")
@@ -133,7 +133,8 @@ class TaskScheduler:
                     recipients=recipients,
                     report_date=target_date,
                     html_content=report.html_content,
-                    pdf_path=report.pdf_path
+                    pdf_path=report.pdf_path,
+                    attach_pdf=False  # 暂不附加 PDF，后续可改为 True
                 )
                 
                 if success:

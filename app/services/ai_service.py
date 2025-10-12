@@ -378,8 +378,18 @@ class AIService:
         if not summaries:
             return "（本层面暂无内容）"
         
+        # 限制摘要数量，避免内容过多导致超时
+        max_summaries = 15
+        if len(summaries) > max_summaries:
+            self.logger.warning(f"摘要数量过多({len(summaries)})，仅使用前{max_summaries}条")
+            summaries = summaries[:max_summaries]
+        
         formatted = []
         for i, summary in enumerate(summaries, 1):
+            # 限制单条摘要长度
+            max_length = 300
+            if len(summary) > max_length:
+                summary = summary[:max_length] + "..."
             formatted.append(f"{i}. {summary}")
         
         return "\n".join(formatted)

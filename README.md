@@ -1,55 +1,17 @@
-# 金融日报系统
+# 金融科技日报系统 V6
 
-一个自动化的金融信息聚合和分析平台，用于从多个信息源收集金融相关资讯，通过AI进行智能总结，并生成每日报告发送给指定用户。
+一个自动化的金融科技信息聚合与报告生成系统。
 
-## 功能特性
+## 📊 系统状态
 
-- 📰 **多源信息获取**：支持RSS、RSSHub、自定义爬虫三种方式
-- 🤖 **AI智能摘要**：使用DeepSeek API生成文章摘要和关键词
-- 📊 **每日报告生成**：自动生成HTML和PDF格式的综合报告
-- 📧 **邮件自动发送**：支持多收件人的邮件订阅
-- 🌐 **Web管理界面**：基于FastAPI的现代化管理界面
-- ⚙️ **灵活配置**：支持信息源管理和个性化报告定制
-- 🔌 **可扩展架构**：插件化的爬虫系统，易于添加新信息源
+✅ **运行状态**: 正常  
+✅ **成功率**: 68.8% (11/16个信息源)  
+✅ **每日文章数**: 510篇  
+✅ **数据完整率**: 90.6%
 
-## 信息源覆盖
+详细状态请查看: [FINAL_STATUS_REPORT.md](FINAL_STATUS_REPORT.md)
 
-### 政治层面
-- 新闻联播
-- 工业和信息化部 (MIIT)
-- 人民日报
-- 新华社
-- 中国证券监督管理委员会 (CSRC)
-
-### 经济层面
-- 艾瑞咨询 (iResearch)
-- 头豹研究院 (LeadLeo)
-- 36氪 (36Kr)
-- 财新网 (Caixin)
-- 虎嗅 (Huxiu)
-
-### 技术层面
-- 量子位 (QbitAI)
-- arXiv 计算金融（cs.FI）
-- 机器之心
-- AI 前线
-- 第一财经
-
-### 金融科技层面
-- 未央网 (WeiyangX)
-
-## 技术栈
-
-- **Web框架**: FastAPI + Uvicorn
-- **数据库**: SQLite + SQLAlchemy
-- **RSS解析**: feedparser
-- **网络爬虫**: requests + BeautifulSoup4
-- **AI服务**: DeepSeek API
-- **报告生成**: Jinja2 + weasyprint
-- **邮件发送**: aiosmtplib
-- **任务调度**: APScheduler
-
-## 快速开始
+## 🚀 快速开始
 
 ### 1. 安装依赖
 
@@ -65,10 +27,9 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-编辑 `.env` 文件，填写必要的配置：
-- DeepSeek API密钥
-- 邮箱SMTP配置
-- 其他可选配置
+必须配置：
+- `AI_API_KEY` - AI服务API密钥
+- `SMTP_*` - 邮件服务器配置
 
 ### 3. 初始化数据库
 
@@ -76,103 +37,137 @@ cp .env.example .env
 python scripts/init_db.py
 ```
 
-### 4. 运行应用
+### 4. 启动系统
 
-开发模式：
+**Windows:**
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+start.bat
 ```
 
-生产模式：
+**Linux/Mac:**
 ```bash
-gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+./start.sh
 ```
 
-### 5. 访问Web界面
+### 5. 访问系统
 
-打开浏览器访问：http://localhost:8000
+- 🏠 主页: http://localhost:9998/
+- 📚 API文档: http://localhost:9998/docs
+- 📰 信息源管理: http://localhost:9998/sources.html
+- 📧 邮件管理: http://localhost:9998/emails.html
 
-## 项目结构
+## 📋 功能特点
+
+- ✅ 自动采集16个信息源的最新资讯
+- ✅ AI智能生成每日摘要
+- ✅ 自动发送邮件报告
+- ✅ Web管理界面
+- ✅ 支持HTML和PDF格式报告
+- ✅ 智能去重和内容清洗
+
+## 📰 信息源列表
+
+### ✅ 正常运行 (11个)
+
+| 信息源 | 类型 | 每日文章数 |
+|--------|------|-----------|
+| 人民日报 | RSS | 100篇 |
+| 新华社 | RSS | 259篇 |
+| 第一财经 | 自定义 | 19篇 |
+| 36氪 | RSSHub | 29篇 |
+| 虎嗅 | RSSHub | 20篇 |
+| 量子位 | 自定义 | 19篇 |
+| 财新网 | 自定义 | 20篇 |
+| 证监会 | 自定义 | 9篇 |
+| 未央网 | 自定义 | 3篇 |
+| 工信部-政策解读 | RSSHub | 24篇 |
+| 工信部-文件公示 | RSSHub | 8篇 |
+
+### ⚠️ 待优化 (5个)
+
+- 机器之心 - 需要API或Selenium
+- 艾瑞咨询 - 网站结构复杂
+- 头豹研究院 - 网站结构复杂
+- AI前线 - 网站结构复杂
+- 工信部-政策文件 - RSSHub暂时不可用
+
+## 🛠️ 常用命令
+
+### 快速测试所有信息源
+```bash
+python quick_test.py
+```
+
+### 验证数据完整性
+```bash
+python validate_crawlers.py
+```
+
+### 初始化/重置数据库
+```bash
+python scripts/init_db.py
+```
+
+## 📁 项目结构
 
 ```
-financial-daily-system/
+.
 ├── app/                    # 应用主目录
 │   ├── api/               # API路由
 │   ├── crawlers/          # 爬虫模块
+│   │   ├── custom/       # 自定义爬虫
+│   │   ├── base.py       # 爬虫基类
+│   │   ├── rss_crawler.py
+│   │   └── rsshub_crawler.py
 │   ├── models/            # 数据模型
-│   ├── schemas/           # Pydantic模式
 │   ├── services/          # 业务逻辑
-│   ├── scheduler/         # 任务调度
 │   └── utils/             # 工具函数
 ├── templates/             # HTML模板
 ├── static/                # 静态文件
-├── data/                  # 数据目录
-├── logs/                  # 日志目录
-├── scripts/               # 脚本
-├── tests/                 # 测试
-├── config.yaml            # 配置文件
-├── requirements.txt       # 依赖
-└── README.md             # 项目说明
+├── scripts/               # 脚本工具
+├── config.yaml           # 配置文件
+├── quick_test.py         # 快速测试脚本
+├── validate_crawlers.py  # 验证脚本
+└── requirements.txt      # 依赖列表
 ```
 
-## 使用说明
+## 🔧 开发指南
 
-### 添加新信息源
+### 添加新的自定义爬虫
 
-1. 通过Web界面添加：访问"信息源管理"页面
-2. 输入信息源名称、RSS地址或RSSHub路径
-3. 系统自动测试可用性
-4. 如需自定义爬虫，在 `app/crawlers/custom/` 目录创建新爬虫类
-
-### 个性化报告
-
-1. 访问"个性化报告"页面
-2. 选择要包含的信息源
-3. 可选：自定义AI提示词
-4. 生成并预览报告
-
-### 邮件订阅
-
-1. 访问"邮件管理"页面
-2. 添加订阅邮箱地址
-3. 系统将在每天指定时间自动发送报告
-
-## 配置说明
-
-主要配置文件：`config.yaml`
-
-- **信息源配置**：在 `sources` 部分配置RSS、RSSHub和自定义爬虫
-- **AI提示词**：在 `deepseek.prompts` 部分自定义提示词模板
-- **调度时间**：在 `scheduler.daily_report_time` 设置报告生成时间
-- **邮件配置**：在 `email` 部分配置SMTP服务器
-
-## 开发指南
-
-### 创建自定义爬虫
+1. 在 `app/crawlers/custom/` 创建新文件，例如 `example_crawler.py`
+2. 继承 `BaseCrawler` 类并实现 `fetch()` 方法：
 
 ```python
-# app/crawlers/custom/example_crawler.py
 from app.crawlers.base import BaseCrawler, Article
-from typing import List
+from datetime import datetime
 
 class ExampleCrawler(BaseCrawler):
-    def fetch(self) -> List[Article]:
-        # 实现爬取逻辑
+    def fetch(self):
         articles = []
-        # ... 爬取代码
+        # 爬取逻辑
         return articles
 ```
 
-### 运行测试
+3. 在Web界面或数据库中添加信息源配置
+
+### 测试爬虫
 
 ```bash
-pytest tests/
+python -c "from app.crawlers.custom.example_crawler import ExampleCrawler; c = ExampleCrawler('测试源'); print(len(c.fetch()))"
 ```
 
-## 许可证
+## 📖 文档
 
-MIT License
+- [最终状态报告](FINAL_STATUS_REPORT.md) - 系统优化详情
+- [部署指南](DEPLOY.md) - 生产环境部署
+- [使用说明](USAGE.md) - 详细使用文档
+- [项目总结](PROJECT_SUMMARY.md) - 项目概述
 
-## 贡献
+## 🤝 贡献
 
 欢迎提交Issue和Pull Request！
+
+## 📄 许可证
+
+MIT License

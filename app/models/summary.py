@@ -16,7 +16,7 @@ class Summary(Base):
     created_at = Column(DateTime, default=datetime.utcnow, comment="创建时间")
     
     # 关系
-    article = relationship("Article", back_populates="summary")
+    article = relationship("Article", back_populates="summaries")
     
     def __repr__(self):
         return f"<Summary(id={self.id}, article_id={self.article_id})>"
