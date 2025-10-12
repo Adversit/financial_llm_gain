@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息源管理 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html" class="active">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>信息源管理</h2>
+            <button class="btn btn-primary" onclick="showAddSourceModal()">添加信息源</button>
+        </div>
+
+        <div class="filter-section">
+            <select id="categoryFilter" onchange="loadSources()">
+                <option value="">全部层面</option>
+                <option value="政治">政治</option>
+                <option value="经济">经济</option>
+                <option value="技术">技术</option>
+                <option value="金融科技">金融科技</option>
+            </select>
+            <select id="statusFilter" onchange="loadSources()">
+                <option value="">全部状态</option>
+                <option value="true">已启用</option>
+                <option value="false">已停用</option>
+            </select>
+        </div>
+
+        <div id="sourcesList" class="sources-list">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 添加信息源模态框 -->
+    <div id="addSourceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>添加信息源</h3>
+            <form id="addSourceForm" onsubmit="addSource(event)">
+                <div class="form-group">
+                    <label>名称 *</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>层面 *</label>
+                    <select name="category" required>
+                        <option value="政治">政治</option>
+                        <option value="经济">经济</option>
+                        <option value="技术">技术</option>
+                        <option value="金融科技">金融科技</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>类型 *</label>
+                    <select name="type" required onchange="updateFormFields(this.value)">
+                        <option value="rss">RSS</option>
+                        <option value="rsshub">RSSHub</option>
+                        <option value="custom">自定义爬虫</option>
+                    </select>
+                </div>
+                <div class="form-group" id="urlField">
+                    <label>URL</label>
+                    <input type="url" name="url">
+                </div>
+                <div class="form-group" id="rsshubField" style="display:none;">
+                    <label>RSSHub路由</label>
+                    <input type="text" name="rsshub_route">
+                </div>
+                <div class="form-group" id="crawlerField" style="display:none;">
+                    <label>爬虫类名</label>
+                    <input type="text" name="crawler_class">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="testSource()">测试</button>
+                    <button type="submit" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+            <div id="testResult" class="test-result"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadSources);
+
+        async function loadSources() {
+            const container = document.getElementById('sourcesList');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+
+            const category = document.getElementById('categoryFilter').value;
+            const enabled = document.getElementById('statusFilter').value;
+
+            let url = '/sources/?';
+            if (category) url += `category=${category}&`;
+            if (enabled) url += `enabled=${enabled}`;
+
+            try {
+                const response = await fetch(url);
+                const sources = await response.json();
+
+                if (sources.length > 0) {
+                    container.innerHTML = '';
+                    sources.forEach(source => {
+                        const card = createSourceCard(source);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<div class="empty-state">暂无信息源</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
+            }
+        }
+
+        function createSourceCard(source) {
+            const card = document.createElement('div');
+            card.className = 'source-card';
+            
+            const statusClass = source.enabled ? 'status-active' : 'status-inactive';
+            const statusText = source.enabled ? '已启用' : '已停用';
+            
+            card.innerHTML = `
+                <div class="source-header">
+                    <h3>${source.name}</h3>
+                    <span class="badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="source-info">
+                    <p><strong>层面：</strong>${source.category}</p>
+                    <p><strong>类型：</strong>${source.type}</p>
+                    ${source.url ? `<p><strong>URL：</strong><a href="${source.url}" target="_blank">${source.url}</a></p>` : ''}
+                    ${source.rsshub_route ? `<p><strong>RSSHub路由：</strong>${source.rsshub_route}</p>` : ''}
+                </div>
+                <div class="source-actions">
+                    <button class="btn btn-secondary" onclick="toggleSource(${source.id}, ${source.enabled})">
+                        ${source.enabled ? '停用' : '启用'}
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteSource(${source.id})">删除</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function toggleSource(id, currentStatus) {
+            try {
+                const response = await fetch(`/sources/${id}/toggle`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    loadSources();
+                } else {
+                    alert('操作失败');
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        async function deleteSource(id) {
+            if (!confirm('确定要删除这个信息源吗？')) return;
+
+            try {
+                const response = await fetch(`/sources/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadSources();
+                } else {
+                    alert('删除失败');
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        function showAddSourceModal() {
+            document.getElementById('addSourceModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addSourceModal').style.display = 'none';
+            document.getElementById('addSourceForm').reset();
+            document.getElementById('testResult').innerHTML = '';
+        }
+
+        function updateFormFields(type) {
+            document.getElementById('urlField').style.display = type === 'rss' ? 'block' : 'none';
+            document.getElementById('rsshubField').style.display = type === 'rsshub' ? 'block' : 'none';
+            document.getElementById('crawlerField').style.display = type === 'custom' ? 'block' : 'none';
+        }
+
+        async function testSource() {
+            const form = document.getElementById('addSourceForm');
+            const formData = new FormData(form);
+            
+            const testData = {
+                type: formData.get('type'),
+                url: formData.get('url'),
+                rsshub_route: formData.get('rsshub_route'),
+                crawler_class: formData.get('crawler_class')
+            };
+
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.innerHTML = '<div class="loading">测试中...</div>';
+
+            try {
+                const response = await fetch('/sources/test', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <p>✓ 测试成功！获取到 ${result.article_count} 篇文章</p>
+                            ${result.sample_titles.length > 0 ? `
+                                <p>示例标题：</p>
+                                <ul>
+                                    ${result.sample_titles.map(title => `<li>${title}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">测试失败: ${error.message}</div>`;
+            }
+        }
+
+        async function addSource(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const sourceData = {
+                name: formData.get('name'),
+                category: formData.get('category'),
+                type: formData.get('type'),
+                url: formData.get('url') || null,
+                rsshub_route: formData.get('rsshub_route') || null,
+                crawler_class: formData.get('crawler_class') || null,
+                enabled: true
+            };
+
+            try {
+                const response = await fetch('/sources/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(sourceData)
+                });
+
+                if (response.ok) {
+                    alert('信息源添加成功！');
+                    closeModal();
+                    loadSources();
+                } else {
+                    const error = await response.json();
+                    alert('添加失败: ' + error.detail);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件管理 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html" class="active">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>邮件订阅管理</h2>
+            <div>
+                <button class="btn btn-secondary" onclick="testEmail()">测试邮件</button>
+                <button class="btn btn-primary" onclick="showAddEmailModal()">添加订阅</button>
+            </div>
+        </div>
+
+        <div id="emailsList" class="emails-list">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 添加邮箱模态框 -->
+    <div id="addEmailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>添加邮件订阅</h3>
+            <form id="addEmailForm" onsubmit="addEmail(event)">
+                <div class="form-group">
+                    <label>邮箱地址 *</label>
+                    <input type="email" name="email" required placeholder="example@email.com">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 测试邮件模态框 -->
+    <div id="testEmailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTestModal()">&times;</span>
+            <h3>发送测试邮件</h3>
+            <form id="testEmailForm" onsubmit="sendTestEmail(event)">
+                <div class="form-group">
+                    <label>测试邮箱地址 *</label>
+                    <input type="email" name="email" required placeholder="example@email.com">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTestModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">发送</button>
+                </div>
+            </form>
+            <div id="testEmailResult" class="test-result"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadEmails);
+
+        async function loadEmails() {
+            const container = document.getElementById('emailsList');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const emails = await apiRequest('/emails/');
+
+                if (emails.length > 0) {
+                    container.innerHTML = '';
+                    emails.forEach(email => {
+                        const card = createEmailCard(email);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<div class="empty-state">暂无邮件订阅</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
+            }
+        }
+
+        function createEmailCard(email) {
+            const card = document.createElement('div');
+            card.className = 'source-card';
+            
+            const statusClass = email.enabled ? 'status-active' : 'status-inactive';
+            const statusText = email.enabled ? '已启用' : '已停用';
+            
+            card.innerHTML = `
+                <div class="source-header">
+                    <h3>${email.email}</h3>
+                    <span class="badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="source-info">
+                    <p><strong>添加时间：</strong>${formatDateTime(email.created_at)}</p>
+                </div>
+                <div class="source-actions">
+                    <button class="btn btn-secondary" onclick="toggleEmail(${email.id}, ${email.enabled})">
+                        ${email.enabled ? '停用' : '启用'}
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteEmail(${email.id})">删除</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function toggleEmail(id, currentStatus) {
+            try {
+                await apiRequest(`/emails/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ enabled: !currentStatus })
+                });
+                
+                showSuccess('状态更新成功');
+                loadEmails();
+            } catch (error) {
+                showError('操作失败: ' + error.message);
+            }
+        }
+
+        async function deleteEmail(id) {
+            if (!confirm('确定要删除这个邮件订阅吗？')) return;
+
+            try {
+                await apiRequest(`/emails/${id}`, { method: 'DELETE' });
+                showSuccess('删除成功');
+                loadEmails();
+            } catch (error) {
+                showError('删除失败: ' + error.message);
+            }
+        }
+
+        function showAddEmailModal() {
+            document.getElementById('addEmailModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addEmailModal').style.display = 'none';
+            document.getElementById('addEmailForm').reset();
+        }
+
+        async function addEmail(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                await apiRequest('/emails/', {
+                    method: 'POST',
+                    body: JSON.stringify({ email: formData.get('email') })
+                });
+
+                showSuccess('邮件订阅添加成功！');
+                closeModal();
+                loadEmails();
+            } catch (error) {
+                showError('添加失败: ' + error.message);
+            }
+        }
+
+        function testEmail() {
+            document.getElementById('testEmailModal').style.display = 'block';
+        }
+
+        function closeTestModal() {
+            document.getElementById('testEmailModal').style.display = 'none';
+            document.getElementById('testEmailForm').reset();
+            document.getElementById('testEmailResult').innerHTML = '';
+        }
+
+        async function sendTestEmail(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const resultDiv = document.getElementById('testEmailResult');
+            
+            resultDiv.innerHTML = '<div class="loading">发送中...</div>';
+
+            try {
+                const result = await apiRequest('/emails/test', {
+                    method: 'POST',
+                    body: JSON.stringify({ email: formData.get('email') })
+                });
+
+                if (result.success) {
+                    resultDiv.innerHTML = '<div class="success">✓ 测试邮件发送成功！请检查收件箱。</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">发送失败: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

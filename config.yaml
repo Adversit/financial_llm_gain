@@ -1,0 +1,141 @@
+# 金融日报系统配置文件
+
+# 应用配置
+app:
+  name: "金融日报系统"
+  version: "1.0.0"
+  debug: false
+
+# 数据库配置
+database:
+  url: "sqlite:///./data/financial_daily.db"
+
+# RSSHub配置
+rsshub:
+  base_url: "http://101.42.187.241:1200"
+
+# AI模型配置
+ai:
+  # 模型提供商：deepseek, openai, azure, anthropic, custom
+  provider: "deepseek"
+  
+  # API配置
+  api_key: "${AI_API_KEY}"
+  base_url: "${AI_BASE_URL}"
+  model: "${AI_MODEL}"
+  
+  # 提示词文件路径
+  prompts:
+    article_summary: "prompts/article_summary.txt"
+    daily_report: "prompts/daily_report.txt"
+  
+  # 请求参数
+  temperature: 0.7
+  max_tokens: 2000
+  timeout: 30
+  max_retries: 3
+
+# 邮件配置
+email:
+  smtp_server: "${SMTP_SERVER}"
+  smtp_port: 465
+  use_ssl: true
+  username: "${SMTP_USERNAME}"
+  password: "${SMTP_PASSWORD}"
+  from_name: "金融日报系统"
+
+# 任务调度配置
+scheduler:
+  daily_report_time: "08:00"
+  timezone: "Asia/Shanghai"
+
+# 信息源配置
+sources:
+  # RSS源
+  rss:
+    - name: "人民日报"
+      category: "政治"
+      url: "http://www.people.com.cn/rss/finance.xml"
+      enabled: true
+    
+    - name: "新华社"
+      category: "政治"
+      url: "http://www.xinhuanet.com/finance/news_finance.xml"
+      enabled: true
+    
+    - name: "第一财经"
+      category: "技术"
+      url: "https://www.yicai.com/rss/news.xml"
+      enabled: true
+  
+  # RSSHub源
+  rsshub:
+    - name: "36氪"
+      category: "经济"
+      route: "36kr/news/latest"
+      enabled: true
+    
+    - name: "虎嗅"
+      category: "经济"
+      route: "huxiu/article"
+      enabled: true
+    
+    - name: "量子位"
+      category: "技术"
+      route: "qbitai"
+      enabled: true
+    
+    - name: "机器之心"
+      category: "技术"
+      route: "jiqizhixin/articles"
+      enabled: true
+    
+    - name: "财新网"
+      category: "经济"
+      route: "caixin/finance"
+      enabled: true
+  
+  # 自定义爬虫源
+  custom:
+    - name: "工业和信息化部"
+      category: "政治"
+      crawler_class: "MIITCrawler"
+      url: "https://www.miit.gov.cn/"
+      enabled: true
+    
+    - name: "中国证券监督管理委员会"
+      category: "政治"
+      crawler_class: "CSRCCrawler"
+      url: "http://www.csrc.gov.cn/"
+      enabled: true
+    
+    - name: "艾瑞咨询"
+      category: "经济"
+      crawler_class: "iResearchCrawler"
+      url: "https://www.iresearch.com.cn/"
+      enabled: true
+    
+    - name: "头豹研究院"
+      category: "经济"
+      crawler_class: "LeadLeoCrawler"
+      url: "https://www.leadleo.com/"
+      enabled: true
+    
+    - name: "未央网"
+      category: "金融科技"
+      crawler_class: "WeiyangXCrawler"
+      url: "https://www.weiyangx.com/"
+      enabled: true
+    
+    - name: "AI前线"
+      category: "技术"
+      crawler_class: "AIFrontierCrawler"
+      url: "https://www.infoq.cn/ai"
+      enabled: true
+
+# 日志配置
+logging:
+  level: "INFO"
+  file: "logs/app.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5

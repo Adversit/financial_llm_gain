@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="active">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>每日报告</h2>
+            <button class="btn btn-primary" onclick="generateReport()">生成今日报告</button>
+        </div>
+
+        <div class="filter-section">
+            <label for="dateFilter">选择日期：</label>
+            <input type="date" id="dateFilter" onchange="loadReports()">
+        </div>
+
+        <div id="reportsList" class="reports-list">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 页面加载时获取报告列表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认日期为昨天
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('dateFilter').valueAsDate = yesterday;
+            
+            loadReports();
+        });
+
+        async function loadReports() {
+            const container = document.getElementById('reportsList');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const response = await fetch('/reports/');
+                const data = await response.json();
+
+                if (data.reports && data.reports.length > 0) {
+                    container.innerHTML = '';
+                    data.reports.forEach(report => {
+                        const card = createReportCard(report);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<div class="empty-state">暂无报告</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
+            }
+        }
+
+        function createReportCard(report) {
+            const card = document.createElement('div');
+            card.className = 'report-card';
+            
+            const totalCount = report.political_count + report.economic_count + 
+                             report.technical_count + report.fintech_count;
+            
+            card.innerHTML = `
+                <div class="report-header">
+                    <h3>${report.report_date}</h3>
+                    <span class="badge">${totalCount} 篇文章</span>
+                </div>
+                <div class="report-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">🏛️ 政治</span>
+                        <span class="stat-value">${report.political_count}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">💰 经济</span>
+                        <span class="stat-value">${report.economic_count}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">🔬 技术</span>
+                        <span class="stat-value">${report.technical_count}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">💳 金融科技</span>
+                        <span class="stat-value">${report.fintech_count}</span>
+                    </div>
+                </div>
+                <div class="report-actions">
+                    <button class="btn btn-secondary" onclick="viewReport('${report.report_date}')">查看报告</button>
+                    <button class="btn btn-secondary" onclick="viewArticles('${report.report_date}')">查看文章</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function viewReport(date) {
+            window.location.href = `/report-detail.html?date=${date}`;
+        }
+
+        async function viewArticles(date) {
+            window.location.href = `/articles.html?date=${date}`;
+        }
+
+        async function generateReport() {
+            const dateInput = document.getElementById('dateFilter');
+            const date = dateInput.value;
+            
+            if (!date) {
+                alert('请选择日期');
+                return;
+            }
+
+            if (!confirm(`确定要生成 ${date} 的报告吗？这可能需要几分钟时间。`)) {
+                return;
+            }
+
+            try {
+                showLoading('正在生成报告，请稍候...');
+                
+                const response = await fetch('/reports/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_date: date,
+                        generate_summaries: true
+                    })
+                });
+
+                const result = await response.json();
+                
+                hideLoading();
+                
+                if (result.success) {
+                    alert('报告生成成功！');
+                    loadReports();
+                } else {
+                    alert('报告生成失败: ' + result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

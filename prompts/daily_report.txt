@@ -1,0 +1,18 @@
+请根据以下各层面的金融资讯摘要，生成一份综合性的每日金融报告。
+
+政治层面：
+{political_summaries}
+
+经济层面：
+{economic_summaries}
+
+技术层面：
+{technical_summaries}
+
+金融科技层面：
+{fintech_summaries}
+
+请生成一份结构化的报告，包括：
+1. 各层面的核心要点
+2. 层面之间的关联分析
+3. 重要趋势和风险提示
