@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +11,9 @@
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .report-title {
             font-size: 28px;
             color: #2c3e50;
@@ -20,18 +21,18 @@
             border-bottom: 3px solid #667eea;
             padding-bottom: 1rem;
         }
-        
+
         .report-meta {
             display: flex;
             gap: 2rem;
             margin-bottom: 2rem;
             color: #7f8c8d;
         }
-        
+
         .category-section {
             margin-bottom: 3rem;
         }
-        
+
         .category-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -41,23 +42,23 @@
             font-size: 20px;
             font-weight: bold;
         }
-        
+
         .category-header.political {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-        
+
         .category-header.economic {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
-        
+
         .category-header.technical {
             background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
         }
-        
+
         .category-header.fintech {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
-        
+
         .article-card {
             background: #f8f9fa;
             padding: 1.5rem;
@@ -65,41 +66,41 @@
             border-radius: 5px;
             border-left: 4px solid #667eea;
         }
-        
+
         .article-title {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 0.5rem;
         }
-        
+
         .article-title a {
             color: #3498db;
             text-decoration: none;
         }
-        
+
         .article-title a:hover {
             text-decoration: underline;
         }
-        
+
         .article-meta {
             font-size: 14px;
             color: #7f8c8d;
             margin-bottom: 1rem;
         }
-        
+
         .article-summary {
             line-height: 1.7;
             color: #555;
             margin-bottom: 1rem;
         }
-        
+
         .article-keywords {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
-        
+
         .keyword {
             background: #3498db;
             color: white;
@@ -107,11 +108,11 @@
             border-radius: 15px;
             font-size: 13px;
         }
-        
+
         .back-button {
             margin-bottom: 1.5rem;
         }
-        
+
         .empty-category {
             color: #95a5a6;
             font-style: italic;
@@ -119,6 +120,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="container">
@@ -130,6 +132,7 @@
                 <li><a href="/sources.html">信息源管理</a></li>
                 <li><a href="/emails.html">邮件管理</a></li>
                 <li><a href="/custom-report.html">个性化报告</a></li>
+                <li><a href="/settings.html">系统设置</a></li>
             </ul>
         </div>
     </nav>
@@ -137,10 +140,36 @@
     <div class="container main-content">
         <div class="back-button">
             <button class="btn btn-secondary" onclick="history.back()">← 返回</button>
+            <button class="btn btn-primary" onclick="showSendEmailModal()" style="float: right;">
+                📧 发送报告
+            </button>
         </div>
 
         <div id="reportDetail" class="report-detail">
             <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 发送邮件模态框 -->
+    <div id="sendEmailModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>📧 发送报告到邮箱</h3>
+                <span class="close" onclick="closeSendEmailModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="recipientsList" style="margin-bottom: 16px;">
+                    <div class="loading">加载中...</div>
+                </div>
+                <div class="help-text"
+                    style="color: #7f8c8d; font-size: 12px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                    💡 提示：如需添加新收件人，请前往"邮件管理"页面添加
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSendEmailModal()">取消</button>
+                <button class="btn btn-primary" onclick="sendReportEmail()">发送</button>
+            </div>
         </div>
     </div>
 
@@ -152,7 +181,7 @@
             '技术': '🔬',
             '金融科技': '💳'
         };
-        
+
         const categoryClasses = {
             '政治': 'political',
             '经济': 'economic',
@@ -160,35 +189,38 @@
             '金融科技': 'fintech'
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        let currentReportDate = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
             const date = getUrlParameter('date');
             if (date) {
+                currentReportDate = date;
                 loadReportDetail(date);
             } else {
-                document.getElementById('reportDetail').innerHTML = 
+                document.getElementById('reportDetail').innerHTML =
                     '<div class="error">缺少日期参数</div>';
             }
         });
 
         async function loadReportDetail(date) {
             const container = document.getElementById('reportDetail');
-            
+
             try {
                 showLoading('加载报告详情...');
-                
+
                 // 获取报告数据
                 const response = await fetch(`/reports/${date}`);
                 const report = await response.json();
-                
+
                 // 获取文章数据
                 const articlesResponse = await fetch(`/articles/?date=${date}`);
                 const articlesData = await articlesResponse.json();
-                
+
                 hideLoading();
-                
+
                 // 渲染报告
                 container.innerHTML = renderReport(report, articlesData.articles || []);
-                
+
             } catch (error) {
                 hideLoading();
                 container.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
@@ -203,14 +235,14 @@
                 '技术': [],
                 '金融科技': []
             };
-            
+
             articles.forEach(article => {
                 const category = article.source_category;
                 if (articlesByCategory[category]) {
                     articlesByCategory[category].push(article);
                 }
             });
-            
+
             let html = `
                 <div class="report-title">
                     📊 金融日报 - ${report.report_date}
@@ -222,19 +254,19 @@
                     <div>⏰ 生成时间: ${formatDateTime(report.created_at)}</div>
                 </div>
             `;
-            
+
             // 渲染各层面
             for (const [category, categoryArticles] of Object.entries(articlesByCategory)) {
                 const icon = categoryIcons[category];
                 const cssClass = categoryClasses[category];
-                
+
                 html += `
                     <div class="category-section">
                         <div class="category-header ${cssClass}">
                             ${icon} ${category}层面 (${categoryArticles.length} 篇)
                         </div>
                 `;
-                
+
                 if (categoryArticles.length === 0) {
                     html += '<div class="empty-category">暂无文章</div>';
                 } else {
@@ -242,16 +274,16 @@
                         html += renderArticle(article, index + 1);
                     });
                 }
-                
+
                 html += '</div>';
             }
-            
+
             return html;
         }
 
         function renderArticle(article, index) {
             const keywords = article.keywords ? JSON.parse(article.keywords) : [];
-            
+
             return `
                 <div class="article-card">
                     <div class="article-title">
@@ -274,6 +306,118 @@
                 </div>
             `;
         }
+
+        // 显示发送邮件模态框
+        async function showSendEmailModal() {
+            document.getElementById('sendEmailModal').style.display = 'flex';
+            await loadRecipients();
+        }
+
+        // 关闭发送邮件模态框
+        function closeSendEmailModal() {
+            document.getElementById('sendEmailModal').style.display = 'none';
+        }
+
+        // 加载收件人列表
+        async function loadRecipients() {
+            const container = document.getElementById('recipientsList');
+
+            try {
+                const response = await fetch('/emails/');
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    let html = '<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: white;">';
+                    let hasActiveRecipients = false;
+
+                    data.forEach(email => {
+                        if (email.enabled) {
+                            hasActiveRecipients = true;
+                            html += `
+                                <label style="display: block; padding: 10px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
+                                    <input type="checkbox" class="recipient-checkbox" value="${email.email}" style="margin-right: 8px;">
+                                    <span style="font-weight: 500; color: #2c3e50;">${email.email}</span>
+                                </label>
+                            `;
+                        }
+                    });
+                    html += '</div>';
+
+                    if (hasActiveRecipients) {
+                        container.innerHTML = html;
+
+                        // 添加hover效果
+                        document.querySelectorAll('#recipientsList label').forEach(label => {
+                            label.addEventListener('mouseenter', function () {
+                                this.style.background = '#f8f9fa';
+                            });
+                            label.addEventListener('mouseleave', function () {
+                                this.style.background = 'white';
+                            });
+                        });
+                    } else {
+                        container.innerHTML = '<div style="color: #95a5a6; padding: 20px; text-align: center; border: 2px dashed #ddd; border-radius: 4px;">暂无启用的收件人</div>';
+                    }
+                } else {
+                    container.innerHTML = '<div style="color: #95a5a6; padding: 20px; text-align: center; border: 2px dashed #ddd; border-radius: 4px;">暂无收件人</div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">加载收件人失败</div>';
+            }
+        }
+
+        // 发送报告邮件
+        async function sendReportEmail() {
+            if (!currentReportDate) {
+                alert('报告日期未知');
+                return;
+            }
+
+            // 收集选中的收件人
+            const checkboxes = document.querySelectorAll('.recipient-checkbox:checked');
+            const selectedEmails = Array.from(checkboxes).map(cb => cb.value);
+
+            // 验证
+            if (selectedEmails.length === 0) {
+                alert('请至少选择一个收件人\n\n如需添加新收件人，请前往"邮件管理"页面添加');
+                return;
+            }
+
+            if (!confirm(`确定要发送报告到以下邮箱吗？\n\n${selectedEmails.join('\n')}`)) {
+                return;
+            }
+
+            try {
+                showLoading('正在发送邮件...');
+
+                const response = await fetch('/api/settings/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_date: currentReportDate,
+                        recipients: selectedEmails,
+                        attach_pdf: false  // 默认不附加PDF
+                    })
+                });
+
+                const result = await response.json();
+
+                hideLoading();
+
+                if (result.success) {
+                    alert(result.message);
+                    closeSendEmailModal();
+                } else {
+                    alert('发送失败: ' + (result.detail || result.message));
+                }
+            } catch (error) {
+                hideLoading();
+                alert('发送失败: ' + error.message);
+            }
+        }
     </script>
 </body>
+
 </html>

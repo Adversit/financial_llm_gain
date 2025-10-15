@@ -83,9 +83,10 @@ app.include_router(sources.router)
 app.include_router(emails.router)
 app.include_router(custom_reports.router)
 
-# 导入并注册文章API
-from app.api import articles
+# 导入并注册文章API和设置API
+from app.api import articles, settings
 app.include_router(articles.router)
+app.include_router(settings.router)
 
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -134,6 +135,12 @@ async def articles_page(request: Request):
 async def custom_report_page(request: Request):
     """个性化报告页面"""
     return templates.TemplateResponse("custom-report.html", {"request": request})
+
+
+@app.get("/settings.html", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """系统设置页面"""
+    return templates.TemplateResponse("settings.html", {"request": request})
 
 
 @app.get("/health")

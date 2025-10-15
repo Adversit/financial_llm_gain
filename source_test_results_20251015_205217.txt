@@ -1,0 +1,67 @@
+====================================================================================================
+所有信息源测试结果
+====================================================================================================
+
+【可用的信息源】
+----------------------------------------------------------------------------------------------------
+OK  移动支付网                               -> RSSStrategy               (49 篇文章)
+OK  金融监管研究                              -> RSSStrategy               (25 篇文章)
+OK  消金界                                 -> RSSStrategy               (49 篇文章)
+OK  AIGC开放社区                            -> RSSStrategy               (45 篇文章)
+OK  脑极体                                 -> RSSStrategy               (26 篇文章)
+OK  赛博禅心                                -> RSSStrategy               (17 篇文章)
+OK  APPSO                               -> RSSStrategy               (24 篇文章)
+OK  硅星人PRO                              -> RSSStrategy               (49 篇文章)
+OK  光子星球                                -> RSSStrategy               (44 篇文章)
+OK  智东西                                 -> RSSStrategy               (37 篇文章)
+OK  DeepTech深科技                         -> RSSStrategy               (50 篇文章)
+OK  数据猿                                 -> RSSStrategy               (48 篇文章)
+OK  深度学习与NLP                            -> RSSStrategy               (28 篇文章)
+OK  BigQuant                            -> RSSStrategy               (28 篇文章)
+OK  新智元                                 -> RSSStrategy               (41 篇文章)
+OK  量子位                                 -> RSSStrategy               (49 篇文章)
+OK  中国人工智能学会                            -> RSSStrategy               (50 篇文章)
+OK  甲子光年                                -> RSSStrategy               (42 篇文章)
+OK  人工智能量化实验室                           -> RSSStrategy               (14 篇文章)
+OK  机器之心                                -> RSSStrategy               (50 篇文章)
+OK  AI科技评论                              -> RSSStrategy               (49 篇文章)
+OK  AI前线                                -> RSSStrategy               (48 篇文章)
+OK  中国金融杂志                              -> RSSStrategy               (48 篇文章)
+OK  Z Finance                           -> RSSStrategy               (39 篇文章)
+OK  中国人民银行                              -> RSSHubStrategy            (18 篇文章)
+OK  中央金融委员会办公室                          -> RSSHubStrategy            (18 篇文章)
+OK  国家发展和改革委员会                          -> RSSHubStrategy            (11 篇文章)
+OK  中国人民银行金融基础数据中心                      -> RSSHubStrategy            (18 篇文章)
+OK  财新网                                 -> RSSHubStrategy            (18 篇文章)
+OK  虎嗅                                  -> RSSHubStrategy            (19 篇文章)
+OK  国家统计局                               -> RSSHubStrategy            (15 篇文章)
+OK  中国证券监督管理委员会                         -> CSRCCrawler               (9 篇文章)
+OK  第一财经                                -> YicaiCrawler              (1 篇文章)
+
+【不可用的信息源】
+----------------------------------------------------------------------------------------------------
+
+【已禁用的信息源】
+----------------------------------------------------------------------------------------------------
+SKIP 工业和信息化部                             -> RSSHubStrategy           
+SKIP 中国证券监督管理委员会                         -> RSSHubStrategy           
+SKIP 外交部国际经济司                            -> RSSHubStrategy           
+SKIP 全国人民代表大会财政经济委员会                     -> RSSHubStrategy           
+SKIP 国家外汇管理局                             -> RSSHubStrategy           
+SKIP 国际货币基金组织中国执董办公室                     -> RSSHubStrategy           
+SKIP 第一财经                                -> RSSHubStrategy           
+SKIP 彭博中国                                -> RSSHubStrategy           
+SKIP 路透中文网                               -> RSSHubStrategy           
+SKIP 工业和信息化部                             -> MIITCrawler              
+SKIP 东方财富网                               -> EastMoneyCrawler         
+SKIP 新华社                                 -> XinhuaCrawler            
+SKIP 36氪                                 -> Kr36Crawler              
+SKIP 国家互联网信息办公室                          -> CACCrawler               
+
+====================================================================================================
+统计信息
+====================================================================================================
+总计: 47 个信息源
+可用: 33 个
+禁用: 14 个
+可用率: 33/33 = 100.0%

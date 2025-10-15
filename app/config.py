@@ -81,6 +81,14 @@ def _override_from_env(config: Dict[str, Any]) -> Dict[str, Any]:
     if os.getenv('TIMEZONE'):
         config['scheduler']['timezone'] = os.getenv('TIMEZONE')
     
+    # Firecrawl配置
+    if 'firecrawl' not in config:
+        config['firecrawl'] = {}
+    if os.getenv('FIRECRAWL_API_KEY'):
+        config['firecrawl']['api_key'] = os.getenv('FIRECRAWL_API_KEY')
+    if os.getenv('FIRECRAWL_API_URL'):
+        config['firecrawl']['api_url'] = os.getenv('FIRECRAWL_API_URL')
+    
     return config
 
 

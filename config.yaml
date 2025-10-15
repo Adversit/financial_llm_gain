@@ -1,148 +1,431 @@
-# 金融日报系统配置文件
-
-# 应用配置
 app:
-  name: "金融日报系统"
-  version: "1.0.0"
+  name: 金融日报系统
+  version: 2.0.0
   debug: false
-
-# 数据库配置
 database:
-  url: "sqlite:///./data/financial_daily.db"
-
-# RSSHub配置
+  url: sqlite:///./data/financial_daily.db
 rsshub:
-  base_url: "http://101.42.187.241:1200"
-
-# AI模型配置
+  base_url: http://101.42.187.241:1200
 ai:
-  # 模型提供商：deepseek, openai, azure, anthropic, custom
-  provider: "deepseek"
-  
-  # API配置
-  api_key: "${AI_API_KEY}"
-  base_url: "${AI_BASE_URL}"
-  model: "${AI_MODEL}"
-  
-  # 提示词文件路径
+  provider: deepseek
+  api_key: ${AI_API_KEY}
+  base_url: ${AI_BASE_URL}
+  model: ${AI_MODEL}
   prompts:
-    article_summary: "prompts/article_summary.txt"
-    daily_report: "prompts/daily_report.txt"
-  
-  # 请求参数
+    article_summary: prompts/article_summary.txt
+    daily_report: prompts/daily_report.txt
   temperature: 0.7
   max_tokens: 2000
-  timeout: 120  # 增加到120秒，适应较长的总结生成
+  timeout: 120
   max_retries: 3
-
-# 邮件配置
 email:
-  smtp_server: "${SMTP_SERVER}"
+  smtp_server: ${SMTP_SERVER}
   smtp_port: 465
   use_ssl: true
-  username: "${SMTP_USERNAME}"
-  password: "${SMTP_PASSWORD}"
-  from_name: "金融日报系统"
-
-# 任务调度配置
+  username: ${SMTP_USERNAME}
+  password: ${SMTP_PASSWORD}
+  from_name: 金融日报系统
 scheduler:
-  daily_report_time: "08:00"
-  timezone: "Asia/Shanghai"
-
-# 报告配置
+  daily_report_time: 08:00
+  timezone: Asia/Shanghai
 report:
-  # PDF 生成配置
-  generate_pdf: true  # 是否生成 PDF（后台生成）
-  show_pdf_in_frontend: false  # 是否在前端显示 PDF 下载链接
-  attach_pdf_in_email: false  # 是否在邮件中附加 PDF
-
-# 信息源配置
-sources:
-  # RSS源
-  rss:
-    - name: "人民日报"
-      category: "政治"
-      url: "http://www.people.com.cn/rss/finance.xml"
-      enabled: true
-    
-    - name: "新华社"
-      category: "政治"
-      url: "http://www.xinhuanet.com/finance/news_finance.xml"
-      enabled: true
-    
-    - name: "第一财经"
-      category: "经济"
-      url: "https://www.yicai.com/rss/index.xml"
-      enabled: true
-  
-  # RSSHub源
-  rsshub:
-    - name: "36氪"
-      category: "经济"
-      route: "36kr/news/latest"
-      enabled: true
-    
-    - name: "虎嗅"
-      category: "经济"
-      route: "huxiu/article"
-      enabled: true
-    
-    - name: "量子位"
-      category: "技术"
-      route: "qbitai"
-      enabled: true
-    
-    - name: "机器之心"
-      category: "技术"
-      route: "jiqizhixin/articles"
-      enabled: true
-    
-    - name: "财新网"
-      category: "经济"
-      route: "caixin/finance"
-      enabled: true
-  
-  # 自定义爬虫源
-  custom:
-    - name: "工业和信息化部"
-      category: "政治"
-      crawler_class: "MIITCrawler"
-      url: "https://www.miit.gov.cn/"
-      enabled: true
-    
-    - name: "中国证券监督管理委员会"
-      category: "政治"
-      crawler_class: "CSRCCrawler"
-      url: "http://www.csrc.gov.cn/"
-      enabled: true
-    
-    - name: "艾瑞咨询"
-      category: "经济"
-      crawler_class: "iResearchCrawler"
-      url: "https://www.iresearch.com.cn/"
-      enabled: true
-    
-    - name: "头豹研究院"
-      category: "经济"
-      crawler_class: "LeadLeoCrawler"
-      url: "https://www.leadleo.com/"
-      enabled: true
-    
-    - name: "未央网"
-      category: "金融科技"
-      crawler_class: "WeiyangXCrawler"
-      url: "https://www.weiyangx.com/"
-      enabled: true
-    
-    - name: "AI前线"
-      category: "技术"
-      crawler_class: "AIFrontierCrawler"
-      url: "https://www.infoq.cn/ai"
-      enabled: true
-
-# 日志配置
+  generate_pdf: true
+  show_pdf_in_frontend: false
+  attach_pdf_in_email: false
 logging:
-  level: "INFO"
-  file: "logs/app.log"
-  max_bytes: 10485760  # 10MB
+  level: INFO
+  file: logs/app.log
+  max_bytes: 10485760
   backup_count: 5
+firecrawl:
+  api_key: ${FIRECRAWL_API_KEY}
+  api_url: ${FIRECRAWL_API_URL}
+  enabled: true
+  timeout: 60
+sources:
+  rss:
+  - name: 移动支付网
+    category: 金融科技
+    url: http://101.42.187.241:8001/feed/MP_WXS_2391444100.rss
+    enabled: true
+  - name: 金融监管研究
+    category: 政治
+    url: http://101.42.187.241:8001/feed/MP_WXS_3008848437.rss
+    enabled: true
+  - name: 消金界
+    category: 金融科技
+    url: http://101.42.187.241:8001/feed/MP_WXS_3560767185.rss
+    enabled: true
+  - name: AIGC开放社区
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3873892677.rss
+    enabled: true
+  - name: 脑极体
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3515522183.rss
+    enabled: true
+  - name: 赛博禅心
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3934419561.rss
+    enabled: true
+  - name: APPSO
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_2392024520.rss
+    enabled: true
+  - name: 硅星人PRO
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3926568365.rss
+    enabled: true
+  - name: 光子星球
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3082518302.rss
+    enabled: true
+  - name: 智东西
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3081486433.rss
+    enabled: true
+  - name: DeepTech深科技
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3075228534.rss
+    enabled: true
+  - name: 数据猿
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3283796271.rss
+    enabled: true
+  - name: 深度学习与NLP
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3214834875.rss
+    enabled: true
+  - name: BigQuant
+    category: 金融科技
+    url: http://101.42.187.241:8001/feed/MP_WXS_3282383876.rss
+    enabled: true
+  - name: 新智元
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3271041950.rss
+    enabled: true
+  - name: 量子位
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3236757533.rss
+    enabled: true
+  - name: 中国人工智能学会
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_2398206135.rss
+    enabled: true
+  - name: 甲子光年
+    category: 经济
+    url: http://101.42.187.241:8001/feed/MP_WXS_3599245772.rss
+    enabled: true
+  - name: 人工智能量化实验室
+    category: 金融科技
+    url: http://101.42.187.241:8001/feed/MP_WXS_3576660523.rss
+    enabled: true
+  - name: 机器之心
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3073282833.rss
+    enabled: true
+  - name: AI科技评论
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3098132220.rss
+    enabled: true
+  - name: AI前线
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3554086560.rss
+    enabled: true
+  - name: 中国金融杂志
+    category: 经济
+    url: http://101.42.187.241:8001/feed/MP_WXS_3083052239.rss
+    enabled: true
+  - name: Z Finance
+    category: 技术
+    url: http://101.42.187.241:8001/feed/MP_WXS_3077513391.rss
+    enabled: true
+  - name: 新华社英文
+    category: 经济
+    url: http://www.xinhuanet.com/english/rss/index.htm
+    enabled: false
+    note: RSS源待测试
+  - name: 国家统计局RSS
+    category: 政治
+    url: https://www.stats.gov.cn/wzgl/rss/202305/t20230519_1939842.html
+    enabled: false
+    note: RSS源待测试
+  rsshub:
+  - name: 中国人民银行
+    category: 政治
+    route: gov/pbc/zcyj
+    enabled: true
+  - name: 中央金融委员会办公室
+    category: 政治
+    route: gov/pbc/zcyj
+    enabled: true
+  - name: 国家发展和改革委员会
+    category: 政治
+    route: gov/ndrc/zfxxgk
+    enabled: true
+  - name: 中国人民银行金融基础数据中心
+    category: 政治
+    route: gov/pbc/zcyj
+    enabled: true
+  - name: 财新网
+    category: 经济
+    route: caixin/latest
+    enabled: true
+  - name: 虎嗅
+    category: 经济
+    route: huxiu/moment
+    enabled: true
+  - name: 国家统计局
+    category: 政治
+    route: gov/stats
+    enabled: true
+  - name: 工业和信息化部
+    category: 政治
+    route: gov/miit/zcwj
+    enabled: false
+    note: 已转为自定义爬虫但连接超时
+  - name: 中国证券监督管理委员会
+    category: 政治
+    route: gov/csrc/zfxxgk_zdgk/:id
+    enabled: false
+    note: 已有自定义爬虫CSRCCrawler可用
+  - name: 外交部国际经济司
+    category: 政治
+    route: gov/fmprc/:category
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 全国人民代表大会财政经济委员会
+    category: 政治
+    route: gov/npc/:caty
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 国家外汇管理局
+    category: 政治
+    route: gov/safe/complaint/:site
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 国际货币基金组织中国执董办公室
+    category: 政治
+    route: imf
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 第一财经
+    category: 经济
+    route: yicai/news/:id
+    enabled: false
+    note: 已有自定义爬虫YicaiCrawler可用
+  - name: 彭博中国
+    category: 经济
+    route: bloomberg/:site
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 路透中文网
+    category: 经济
+    route: reuters/:category/:topic
+    enabled: false
+    note: RSSHub路由失效，待开发自定义爬虫
+  - name: 麦肯锡中国
+    category: 经济
+    route: mckinsey/cn/:category
+    enabled: false
+    note: RSSHub路由待测试
+  - name: 联合资信
+    category: 经济
+    route: lhratings/research/:type
+    enabled: false
+    note: RSSHub路由待测试
+  - name: arXiv 计算金融
+    category: 技术
+    route: papers/category/arxiv/cs.AI
+    enabled: true
+    note: RSSHub路由待测试
+  - name: GitHub 金融 AI
+    category: 技术
+    route: github/notifications
+    enabled: false
+    note: RSSHub路由待测试
+  - name: Hugging Face 金融大模型
+    category: 技术
+    route: huggingface/daily-papers/:cycle
+    enabled: false
+    note: RSSHub路由待测试
+  - name: 掘金
+    category: 技术
+    route: juejin/trending/:category/:type
+    enabled: false
+    note: RSSHub路由待测试
+  - name: TechCrunch
+    category: 技术
+    route: techcrunch/news
+    enabled: true
+    note: RSSHub路由待测试
+  - name: The Wall Street Journal
+    category: 经济
+    route: wsj/:lang/:category
+    enabled: false
+    note: RSSHub路由待测试
+  - name: Bloomberg Technology
+    category: 技术
+    route: bloomberg/:site
+    enabled: false
+    note: RSSHub路由待测试
+  - name: Financial Times
+    category: 经济
+    route: ft/myft/:key
+    enabled: false
+    note: RSSHub路由待测试
+  custom:
+  - name: 中国证券监督管理委员会
+    category: 政治
+    crawler_class: CSRCCrawler
+    url: http://www.csrc.gov.cn/
+    enabled: true
+  - name: 第一财经
+    category: 经济
+    crawler_class: YicaiCrawler
+    url: https://www.yicai.com/
+    enabled: true
+  - name: 工业和信息化部
+    category: 政治
+    crawler_class: MIITCrawler
+    url: https://www.miit.gov.cn/
+    enabled: false
+    note: 连接超时，待修复
+  - name: 东方财富网
+    category: 经济
+    crawler_class: EastMoneyCrawler
+    url: https://finance.eastmoney.com/
+    enabled: false
+    note: 网站结构变化，待更新选择器
+  - name: 新华社
+    category: 经济
+    crawler_class: XinhuaCrawler
+    url: http://www.news.cn/
+    enabled: false
+    note: 网站结构变化，待更新选择器
+  - name: 36氪
+    category: 经济
+    crawler_class: Kr36Crawler
+    url: https://36kr.com/
+    enabled: false
+    note: API返回格式变化，待更新解析逻辑
+  - name: 国家互联网信息办公室
+    category: 政治
+    crawler_class: CACCrawler
+    url: http://www.cac.gov.cn/
+    enabled: false
+    note: 网站结构变化，待更新选择器
+  - name: 科学技术部
+    category: 政治
+    crawler_class: MOSTCrawler
+    url: http://www.most.gov.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 国家金融监督管理总局
+    category: 政治
+    crawler_class: NFRACrawler
+    url: https://www.nfra.gov.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 零壹财经
+    category: 经济
+    crawler_class: ZeroOneCrawler
+    url: https://www.01caijing.com/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 万得资讯
+    category: 金融科技
+    crawler_class: WindCrawler
+    url: https://www.wind.com.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 同花顺 iFinD
+    category: 金融科技
+    crawler_class: IFindCrawler
+    url: https://www.51ifind.com/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 中国社会科学院金融研究所
+    category: 政治
+    crawler_class: CASSCrawler
+    url: http://ifb.cass.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 清华大学五道口金融学院
+    category: 经济
+    crawler_class: TsinghuaPBCCrawler
+    url: https://www.pbcsf.tsinghua.edu.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 波士顿咨询（BCG）中国
+    category: 经济
+    crawler_class: BCGCrawler
+    url: https://www.bcg.com/cn
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 中诚信国际
+    category: 经济
+    crawler_class: CCXICrawler
+    url: https://www.ccxi.com.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 证券时报
+    category: 经济
+    crawler_class: STCNCrawler
+    url: http://www.stcn.com/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 经济参考报
+    category: 经济
+    crawler_class: JJCKBCrawler
+    url: http://www.jjckb.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: SSRN 金融经济学
+    category: 经济
+    crawler_class: SSRNCrawler
+    url: https://www.ssrn.com/index.cfm/en/fen/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 中国互联网金融协会
+    category: 政治
+    crawler_class: NIFACrawler
+    url: http://www.nifa.org.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 世界人工智能大会
+    category: 技术
+    crawler_class: WorldAICCrawler
+    url: https://www.worldaic.com.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 中国银行业协会
+    category: 政治
+    crawler_class: ChinaCBACrawler
+    url: https://www.china-cba.net/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 中国证券业协会
+    category: 政治
+    crawler_class: SACCrawler
+    url: https://www.sac.net.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 北京大学数字金融研究中心
+    category: 经济
+    crawler_class: PKUIDFCrawler
+    url: https://idf.pku.edu.cn/
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 清华大学五道口金融学院金融科技实验室
+    category: 技术
+    crawler_class: TsinghuaFintechLabCrawler
+    url: https://fintechlab.pbcsf.tsinghua.edu.cn/yjfb/qb.htm
+    enabled: false
+    note: 待开发自定义爬虫
+  - name: 新华财经专业终端
+    category: 金融科技
+    crawler_class: XinhuaFinanceCrawler
+    url: https://www.ceis.cn/download/
+    enabled: false
+    note: 需要专业终端访问

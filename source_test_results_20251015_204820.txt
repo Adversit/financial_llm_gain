@@ -1,0 +1,91 @@
+====================================================================================================
+所有信息源测试结果
+====================================================================================================
+
+【可用的信息源】
+----------------------------------------------------------------------------------------------------
+OK  中国人民银行                              -> RSSHubStrategy            (18 篇文章)
+OK  中央金融委员会办公室                          -> RSSHubStrategy            (18 篇文章)
+OK  国家发展和改革委员会                          -> RSSHubStrategy            (11 篇文章)
+OK  中国人民银行金融基础数据中心                      -> RSSHubStrategy            (18 篇文章)
+OK  财新网                                 -> RSSHubStrategy            (18 篇文章)
+OK  虎嗅                                  -> RSSHubStrategy            (19 篇文章)
+OK  国家统计局                               -> RSSHubStrategy            (15 篇文章)
+OK  中国证券监督管理委员会                         -> CSRCCrawler               (9 篇文章)
+OK  第一财经                                -> YicaiCrawler              (1 篇文章)
+
+【不可用的信息源】
+----------------------------------------------------------------------------------------------------
+ERROR  移动支付网                               -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  金融监管研究                              -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  消金界                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  AIGC开放社区                            -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  脑极体                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  赛博禅心                                -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  APPSO                               -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  硅星人PRO                              -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  光子星球                                -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  智东西                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  DeepTech深科技                         -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  数据猿                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  深度学习与NLP                            -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  BigQuant                            -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  新智元                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  量子位                                 -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  中国人工智能学会                            -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  甲子光年                                -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  人工智能量化实验室                           -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  机器之心                                -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  AI科技评论                              -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  AI前线                                -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  中国金融杂志                              -> RSSStrategy              
+       错误: 所有爬取策略都失败
+ERROR  Z Finance                           -> RSSStrategy              
+       错误: 所有爬取策略都失败
+
+【已禁用的信息源】
+----------------------------------------------------------------------------------------------------
+SKIP 工业和信息化部                             -> RSSHubStrategy           
+SKIP 中国证券监督管理委员会                         -> RSSHubStrategy           
+SKIP 外交部国际经济司                            -> RSSHubStrategy           
+SKIP 全国人民代表大会财政经济委员会                     -> RSSHubStrategy           
+SKIP 国家外汇管理局                             -> RSSHubStrategy           
+SKIP 国际货币基金组织中国执董办公室                     -> RSSHubStrategy           
+SKIP 第一财经                                -> RSSHubStrategy           
+SKIP 彭博中国                                -> RSSHubStrategy           
+SKIP 路透中文网                               -> RSSHubStrategy           
+SKIP 工业和信息化部                             -> MIITCrawler              
+SKIP 东方财富网                               -> EastMoneyCrawler         
+SKIP 新华社                                 -> XinhuaCrawler            
+SKIP 36氪                                 -> Kr36Crawler              
+SKIP 国家互联网信息办公室                          -> CACCrawler               
+
+====================================================================================================
+统计信息
+====================================================================================================
+总计: 47 个信息源
+可用: 9 个
+禁用: 14 个
+可用率: 9/33 = 27.3%

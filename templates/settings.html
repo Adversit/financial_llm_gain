@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统设置 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .settings-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .settings-section h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-group .help-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+        
+        .current-value {
+            background: #ecf0f1;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .current-value strong {
+            color: #2c3e50;
+        }
+        
+        .current-value .value {
+            color: #3498db;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+                <li><a href="/settings.html" class="active">系统设置</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>⚙️ 系统设置</h2>
+        </div>
+
+        <!-- 定时任务设置 -->
+        <div class="settings-section">
+            <h3>⏰ 定时任务设置</h3>
+            
+            <div class="current-value">
+                <strong>当前定时时间：</strong>
+                <span class="value" id="currentScheduleTime">加载中...</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="scheduleTime">设置每日报告生成时间</label>
+                <input type="time" id="scheduleTime" value="08:00">
+                <div class="help-text">系统将在每天的这个时间自动生成并发送报告</div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="updateScheduleTime()">保存定时设置</button>
+            <div class="help-text" style="margin-top: 12px; color: #e74c3c;">
+                ⚠️ 注意：修改定时时间后需要重启服务才能生效
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 页面加载时获取当前设置
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScheduleTime();
+        });
+
+        async function loadScheduleTime() {
+            try {
+                const response = await fetch('/api/settings/schedule-time');
+                const data = await response.json();
+                
+                document.getElementById('currentScheduleTime').textContent = data.schedule_time;
+                document.getElementById('scheduleTime').value = data.schedule_time;
+            } catch (error) {
+                console.error('加载定时时间失败:', error);
+                document.getElementById('currentScheduleTime').textContent = '加载失败';
+            }
+        }
+
+        async function updateScheduleTime() {
+            const scheduleTime = document.getElementById('scheduleTime').value;
+            
+            if (!scheduleTime) {
+                alert('请选择时间');
+                return;
+            }
+
+            if (!confirm(`确定要将定时时间设置为 ${scheduleTime} 吗？\n\n修改后需要重启服务才能生效。`)) {
+                return;
+            }
+
+            try {
+                showLoading('正在保存设置...');
+                
+                const response = await fetch('/api/settings/schedule-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        schedule_time: scheduleTime
+                    })
+                });
+
+                const result = await response.json();
+                
+                hideLoading();
+                
+                if (result.success) {
+                    alert(result.message + '\n\n' + result.note);
+                    loadScheduleTime();
+                } else {
+                    alert('保存失败: ' + result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

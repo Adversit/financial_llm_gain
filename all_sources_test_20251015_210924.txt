@@ -1,0 +1,86 @@
+====================================================================================================
+所有信息源测试结果 - 2025-10-15 21:09:24
+====================================================================================================
+
+总计: 78 个信息源
+可用: 35 个 (44.9%)
+启用的源可用率: 33/33 (100.0%)
+
+可用的信息源:
+----------------------------------------------------------------------------------------------------
+✓ 移动支付网                                         rss         49 篇
+✓ 金融监管研究                                        rss         25 篇
+✓ 消金界                                           rss         49 篇
+✓ AIGC开放社区                                      rss         45 篇
+✓ 脑极体                                           rss         26 篇
+✓ 赛博禅心                                          rss         17 篇
+✓ APPSO                                         rss         24 篇
+✓ 硅星人PRO                                        rss         49 篇
+✓ 光子星球                                          rss         44 篇
+✓ 智东西                                           rss         37 篇
+✓ DeepTech深科技                                   rss         50 篇
+✓ 数据猿                                           rss         48 篇
+✓ 深度学习与NLP                                      rss         28 篇
+✓ BigQuant                                      rss         28 篇
+✓ 新智元                                           rss         41 篇
+✓ 量子位                                           rss         49 篇
+✓ 中国人工智能学会                                      rss         50 篇
+✓ 甲子光年                                          rss         42 篇
+✓ 人工智能量化实验室                                     rss         14 篇
+✓ 机器之心                                          rss         50 篇
+✓ AI科技评论                                        rss         49 篇
+✓ AI前线                                          rss         48 篇
+✓ 中国金融杂志                                        rss         48 篇
+✓ Z Finance                                     rss         39 篇
+✓ 中国人民银行                                        rsshub      18 篇
+✓ 中央金融委员会办公室                                    rsshub      18 篇
+✓ 国家发展和改革委员会                                    rsshub      11 篇
+✓ 中国人民银行金融基础数据中心                                rsshub      18 篇
+✓ 财新网                                           rsshub      18 篇
+✓ 虎嗅                                            rsshub      19 篇
+✓ 国家统计局                                         rsshub      15 篇
+✗ arXiv 计算金融                                    rsshub      50 篇
+✗ TechCrunch                                    rsshub      10 篇
+✓ 中国证券监督管理委员会                                   custom       9 篇
+✓ 第一财经                                          custom       2 篇
+
+失败的信息源:
+----------------------------------------------------------------------------------------------------
+✗ 新华社英文                                         ERROR           所有爬取策略都失败
+✗ 国家统计局RSS                                      ERROR           所有爬取策略都失败
+✗ 工业和信息化部                                       ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 中国证券监督管理委员会                                   ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 外交部国际经济司                                      ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 全国人民代表大会财政经济委员会                               ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 国家外汇管理局                                       ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 国际货币基金组织中国执董办公室                               ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 第一财经                                          ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 彭博中国                                          ERROR           所有爬取策略都失败，最后的错误: HTTPConnectionPool(host='127.0.0.1', port=7890): Read timed out
+✗ 路透中文网                                         ERROR           所有爬取策略都失败，最后的错误: HTTPConnectionPool(host='127.0.0.1', port=7890): Read timed out
+✗ 麦肯锡中国                                         ERROR           所有爬取策略都失败，最后的错误: HTTPConnectionPool(host='127.0.0.1', port=7890): Read timed out
+✗ 联合资信                                          ERROR           所有爬取策略都失败
+✗ GitHub 金融 AI                                  ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ Hugging Face 金融大模型                            ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 掘金                                            ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ The Wall Street Journal                       ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ Bloomberg Technology                          ERROR           所有爬取策略都失败，最后的错误: HTTPConnectionPool(host='127.0.0.1', port=7890): Read timed out
+✗ Financial Times                               ERROR           所有爬取策略都失败，最后的错误: 503 Server Error: Service Unavailable for url: http://101.42.18
+✗ 科学技术部                                         ERROR           自定义爬虫 MOSTCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 国家金融监督管理总局                                    ERROR           自定义爬虫 NFRACrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 零壹财经                                          ERROR           自定义爬虫 ZeroOneCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 万得资讯                                          ERROR           自定义爬虫 WindCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 同花顺 iFinD                                     ERROR           自定义爬虫 IFindCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 中国社会科学院金融研究所                                  ERROR           自定义爬虫 CASSCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 清华大学五道口金融学院                                   ERROR           自定义爬虫 TsinghuaPBCCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 波士顿咨询（BCG）中国                                  ERROR           自定义爬虫 BCGCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 中诚信国际                                         ERROR           自定义爬虫 CCXICrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 证券时报                                          ERROR           自定义爬虫 STCNCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 经济参考报                                         ERROR           自定义爬虫 JJCKBCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ SSRN 金融经济学                                    ERROR           自定义爬虫 SSRNCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 中国互联网金融协会                                     ERROR           自定义爬虫 NIFACrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 世界人工智能大会                                      ERROR           自定义爬虫 WorldAICCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 中国银行业协会                                       ERROR           自定义爬虫 ChinaCBACrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 中国证券业协会                                       ERROR           自定义爬虫 SACCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 北京大学数字金融研究中心                                  ERROR           自定义爬虫 PKUIDFCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 清华大学五道口金融学院金融科技实验室                            ERROR           自定义爬虫 TsinghuaFintechLabCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。
+✗ 新华财经专业终端                                      ERROR           自定义爬虫 XinhuaFinanceCrawler 不存在。请在 app/crawlers/custom/ 目录下创建对应的爬虫文件。

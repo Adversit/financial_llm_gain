@@ -1,0 +1,78 @@
+公众号：
+移动支付网 101.42.187.241:8001/feed/MP_WXS_2391444100.rss
+金融监管研究 101.42.187.241:8001/feed/MP_WXS_3008848437.rss
+消金界 101.42.187.241:8001/feed/MP_WXS_3560767185.rss
+AIGC开放社区 101.42.187.241:8001/feed/MP_WXS_3873892677.rss
+脑极体 101.42.187.241:8001/feed/MP_WXS_3515522183.rss
+赛博禅心 101.42.187.241:8001/feed/MP_WXS_3934419561.rss
+APPSO 101.42.187.241:8001/feed/MP_WXS_2392024520.rss
+硅星人PRO 101.42.187.241:8001/feed/MP_WXS_3926568365.rss
+光子星球 101.42.187.241:8001/feed/MP_WXS_3082518302.rss
+智东西 101.42.187.241:8001/feed/MP_WXS_3081486433.rss
+DeepTech深科技 101.42.187.241:8001/feed/MP_WXS_3075228534.rss
+数据猿 101.42.187.241:8001/feed/MP_WXS_3283796271.rss
+深度学习与NLP 101.42.187.241:8001/feed/MP_WXS_3214834875.rss
+BigQuant 101.42.187.241:8001/feed/MP_WXS_3282383876.rss
+新智元 101.42.187.241:8001/feed/MP_WXS_3271041950.rss
+量子位 101.42.187.241:8001/feed/MP_WXS_3236757533.rss
+中国人工智能学会 101.42.187.241:8001/feed/MP_WXS_2398206135.rss
+甲子光年 101.42.187.241:8001/feed/MP_WXS_3599245772.rss
+Z Finance 101.42.187.241:8001/feed/MP_WXS_3077513391.rss
+人工智能量化实验室 101.42.187.241:8001/feed/MP_WXS_3576660523.rss
+机器之心 101.42.187.241:8001/feed/MP_WXS_3073282833.rss
+AI科技评论 101.42.187.241:8001/feed/MP_WXS_3098132220.rss
+AI前线 101.42.187.241:8001/feed/MP_WXS_3554086560.rss
+中国金融杂志 101.42.187.241:8001/feed/MP_WXS_3083052239.rss
+国家金融与发展实验101.42.187.241:8001/feed/MP_WXS_3077130751.rss
+工业和信息化部 (MIIT) http://www.miit.gov.cn/ None found https://rsshub.app/gov/miit/zcwj
+科学技术部 (MOST) http://www.most.gov.cn/ None found None specific, check /gov routes
+新华社 http://www.xinhuanet.com/ http://www.xinhuanet.com/english/rss/index.htm https://rsshub.app/xinhuanet/app
+中国人民银行 (PBOC) http://www.pbc.gov.cn/ None found https://rsshub.app/gov/pbc/zcyj
+国家金融监督管理总局 (NFRA) https://www.nfra.gov.cn/ None found None specific
+国家互联网信息办公室 (CAC) http://www.cac.gov.cn/ None found https://rsshub.app/gov/cac
+中央金融委员会办公室 (CFSC Office) http://www.pbc.gov.cn/ None found https://rsshub.app/gov/pbc/zcyj
+中国证券监督管理委员会 (CSRC) http://www.csrc.gov.cn/ None found https://rsshub.app/gov/csrc/zfxxgk_zdgk/:id
+国家发展和改革委员会 (NDRC) https://www.ndrc.gov.cn/ None found https://rsshub.app/gov/ndrc/zfxxgk
+外交部国际经济司 (MFA International Economic Department) https://www.fmprc.gov.cn/ None found https://rsshub.app/gov/fmprc/:category
+全国人民代表大会财政经济委员会 (NPC Financial and Economic Committee) http://www.npc.gov.cn/ None found https://rsshub.app/gov/npc/:caty
+国家外汇管理局 (SAFE) http://www.safe.gov.cn/ None found https://rsshub.app/gov/safe/complaint/:site
+新华财经专业终端 (Xinhua Finance Professional Terminal) https://www.ceis.cn/download/ None found None specific
+中国人民银行金融基础数据中心 (PBOC Financial Basic Data Center) http://www.pbc.gov.cn/ None found https://rsshub.app/gov/pbc/zcyj
+国际货币基金组织中国执董办公室 (IMF China Executive Director's Office) https://www.imf.org/ https://www.imf.org/en/rss-list https://rsshub.app/imf
+艾瑞咨询 (iResearch) https://www.iresearch.com.cn/ None found None specific
+头豹研究院 (LeadLeo) https://www.leadleo.com/ None found None specific
+36氪 (36Kr) https://www.36kr.com/ None found https://rsshub.app/36kr/:category/:subCategory
+财新网 (Caixin) https://www.caixin.com/ None found https://rsshub.app/caixin/latest
+零壹财经 (01caijing) https://www.01caijing.com/ None found None specific
+虎嗅 (Huxiu) https://www.huxiu.com/ None found https://rsshub.app/huxiu/moment
+第一财经 (Yicai) https://www.yicai.com/ None found https://rsshub.app/yicai/news/:id
+国家统计局 (National Bureau of Statistics of China) https://www.stats.gov.cn/ https://www.stats.gov.cn/wzgl/rss/202305/t20230519_1939842.html https://rsshub.app/gov/stats
+万得资讯 (Wind Information) https://www.wind.com.cn/ None found None specific
+同花顺 iFinD (iFinD Data) https://www.51ifind.com/ None found None specific
+东方财富网 (East Money Information) https://www.eastmoney.com/ None found https://rsshub.app/eastmoney/report/:category
+彭博中国 (Bloomberg China) https://www.bloomberg.com/asia None found https://rsshub.app/bloomberg/:site
+路透中文网 (Reuters China) https://cn.reuters.com/ None found https://rsshub.app/reuters/:category/:topic
+中国社会科学院金融研究所 (CASS Institute of Finance) http://ifb.cass.cn/ None found None specific
+清华大学五道口金融学院 (Tsinghua PBC School of Finance) https://www.pbcsf.tsinghua.edu.cn/ None found None specific
+麦肯锡中国 (McKinsey & Company China) https://www.mckinsey.com/cn None found https://rsshub.app/mckinsey/cn/:category
+波士顿咨询（BCG）中国 (BCG China) https://www.bcg.com/cn None found None specific
+中诚信国际 (CCXI) https://www.ccxi.com.cn/ None found None specific
+联合资信 (Lianhe Credit Rating) https://www.lhratings.com/ None found https://rsshub.app/lhratings/research/:type
+arXiv 计算金融（cs.FI）分区 https://arxiv.org/list/cs.FI/recent https://info.arxiv.org/help/rss.html https://rsshub.app/papers/category/arxiv/cs.AI
+GitHub 金融 AI 开源仓库专区 https://github.com/topics/finance-ai None found https://rsshub.app/github/notifications
+Hugging Face 金融大模型专区 https://huggingface.co/models?library=transformers&search=finance None found https://rsshub.app/huggingface/daily-papers/:cycle
+掘金 https://juejin.cn/ None found https://rsshub.app/juejin/trending/:category/:type
+证券时报 http://www.stcn.com/ None found None specific
+经济参考报 http://www.jjckb.cn/ None found None specific
+SSRN 金融经济学 https://www.ssrn.com/index.cfm/en/fen/ None found None specific
+TechCrunch https://techcrunch.com/category/fintech/ https://techcrunch.com/rss-terms-of-use/ https://rsshub.app/techcrunch/news
+The Wall Street Journal (WSJ) Fintech 专题 https://www.wsj.com/news/fintech https://www.wsj.com/news/rss-news-and-feeds https://rsshub.app/wsj/:lang/:category
+Bloomberg (Technology & Finance News) https://www.bloomberg.com/technology None found https://rsshub.app/bloomberg/:site
+Financial Times (FT) - Tech/Fintech https://www.ft.com/tech-sector https://www.ft.com/news-feed?format=rss https://rsshub.app/ft/myft/:key
+中国互联网金融协会 http://www.nifa.org.cn/ None found None specific
+未央网 (WeiyangX) http://www.weiyangx.com/ None found None specific
+世界人工智能大会 https://www.worldaic.com.cn/ None found None specific
+中国银行业协会 https://www.china-cba.net/ None found None specific
+中国证券业协会 https://www.sac.net.cn/ None found None specific
+北京大学数字金融研究中心 https://idf.pku.edu.cn/ None found None specific
+清华大学五道口金融学院金融科技实验室 https://fintechlab.pbcsf.tsinghua.edu.cn/yjfb/qb.htm None found None specific

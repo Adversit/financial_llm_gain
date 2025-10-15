@@ -17,6 +17,7 @@
                 <li><a href="/sources.html">信息源管理</a></li>
                 <li><a href="/emails.html">邮件管理</a></li>
                 <li><a href="/custom-report.html">个性化报告</a></li>
+                <li><a href="/settings.html">系统设置</a></li>
             </ul>
         </div>
     </nav>
@@ -104,6 +105,7 @@
                 <div class="report-actions">
                     <button class="btn btn-secondary" onclick="viewReport('${report.report_date}')">查看报告</button>
                     <button class="btn btn-secondary" onclick="viewArticles('${report.report_date}')">查看文章</button>
+                    <button class="btn btn-primary" onclick="sendReport('${report.report_date}')">📧 发送</button>
                 </div>
             `;
             
@@ -159,6 +161,11 @@
                 hideLoading();
                 alert('请求失败: ' + error.message);
             }
+        }
+        
+        async function sendReport(date) {
+            // 跳转到报告详情页面，在那里可以发送邮件
+            window.location.href = `/report-detail.html?date=${date}`;
         }
     </script>
 </body>
