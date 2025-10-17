@@ -202,7 +202,7 @@
         {% if overall_summary %}
         <div class="summary-section">
             <h2>📋 每日综述</h2>
-            <p>{{ overall_summary }}</p>
+            {{ overall_summary | safe }}
         </div>
         {% endif %}
         

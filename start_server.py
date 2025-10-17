@@ -4,8 +4,12 @@
 """
 import socket
 import sys
+import warnings
 import uvicorn
 from app.utils.logger import app_logger
+
+# 过滤 jieba 的 pkg_resources 弃用警告
+warnings.filterwarnings("ignore", category=UserWarning, module="jieba")
 
 
 def get_local_ip():

@@ -16,7 +16,7 @@ ai:
     daily_report: prompts/daily_report.txt
   temperature: 0.7
   max_tokens: 2000
-  timeout: 180
+  timeout: 300  # 超时时间增加到300秒（5分钟），确保长报告生成不会超时
   max_retries: 3
 email:
   smtp_server: ${SMTP_SERVER}

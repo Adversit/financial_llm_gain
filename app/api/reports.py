@@ -29,6 +29,8 @@ def list_reports(
     db: Session = Depends(get_db)
 ):
     """获取报告列表"""
+    from fastapi.responses import JSONResponse
+    
     # 查询报告
     reports = db.query(DailyReport).order_by(
         DailyReport.report_date.desc()
@@ -56,22 +58,36 @@ def list_reports(
             if category in counts:
                 counts[category] += 1
         
-        report_summaries.append(ReportSummary(
-            report_date=report.report_date,
-            political_count=counts['政治'],
-            economic_count=counts['经济'],
-            technical_count=counts['技术'],
-            fintech_count=counts['金融科技'],
-            total_count=sum(counts.values())
-        ))
+        report_summaries.append({
+            "report_date": report.report_date.isoformat(),
+            "political_count": counts['政治'],
+            "economic_count": counts['经济'],
+            "technical_count": counts['技术'],
+            "fintech_count": counts['金融科技'],
+            "total_count": sum(counts.values())
+        })
     
-    return ReportListResponse(total=total, reports=report_summaries)
+    response_data = {
+        "total": total,
+        "reports": report_summaries
+    }
+    
+    # 添加禁用缓存的响应头
+    return JSONResponse(
+        content=response_data,
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
 
 
 @router.get("/{report_date}", response_model=ReportResponse)
 def get_report(report_date: date, db: Session = Depends(get_db)):
     """获取指定日期的报告"""
     from fastapi import Response
+    from fastapi.responses import JSONResponse
     
     report = db.query(DailyReport).filter(
         DailyReport.report_date == report_date
@@ -80,7 +96,28 @@ def get_report(report_date: date, db: Session = Depends(get_db)):
     if not report:
         raise HTTPException(status_code=404, detail="报告不存在")
     
-    return report
+    # 构建响应数据
+    report_data = {
+        "report_date": report.report_date.isoformat(),
+        "political_summary": report.political_summary,
+        "economic_summary": report.economic_summary,
+        "technical_summary": report.technical_summary,
+        "fintech_summary": report.fintech_summary,
+        "overall_summary": report.overall_summary,
+        "html_content": report.html_content,
+        "pdf_path": report.pdf_path,
+        "created_at": report.created_at.isoformat() if report.created_at else None
+    }
+    
+    # 添加禁用缓存的响应头
+    return JSONResponse(
+        content=report_data,
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+    )
 
 
 @router.get("/articles/{report_date}/{category}", response_model=ArticleListResponse)

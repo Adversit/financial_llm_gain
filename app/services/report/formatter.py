@@ -26,7 +26,7 @@ class ReportFormatter:
         # 初始化Jinja2环境
         self.jinja_env = Environment(
             loader=FileSystemLoader(str(self.template_dir)),
-            autoescape=True
+            autoescape=False  # 关闭自动转义，因为 overall_summary 已经是 HTML 格式
         )
     
     def format_summary_to_html(self, text: str) -> str:
@@ -41,6 +41,12 @@ class ReportFormatter:
         """
         # 处理分隔线
         text = text.replace('---', '<hr>')
+        text = text.replace('___', '<hr>')
+        
+        # 处理 Markdown 标题 (### 标题)
+        text = re.sub(r'^###\s+(.+?)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
+        text = re.sub(r'^##\s+(.+?)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
+        text = re.sub(r'^#\s+(.+?)$', r'<h1>\1</h1>', text, flags=re.MULTILINE)
         
         # 处理标题（一、二、三、四）- 先处理，避免被粗体标记影响
         text = re.sub(r'^\*\*(一、|二、|三、|四、)(.+?)\*\*\s*$', r'<h3>\1\2</h3>', text, flags=re.MULTILINE)

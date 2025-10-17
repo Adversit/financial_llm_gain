@@ -129,12 +129,20 @@ class TaskScheduler:
             recipients = self._get_active_recipients(db)
             
             if recipients:
+                # 准备报告数据
+                report_data = {
+                    'overall_summary': report.overall_summary,
+                    'political_summary': report.political_summary,
+                    'economic_summary': report.economic_summary,
+                    'technical_summary': report.technical_summary,
+                    'fintech_summary': report.fintech_summary
+                }
+                
                 success = email_sender.send_report(
                     recipients=recipients,
                     report_date=target_date,
-                    html_content=report.html_content,
-                    pdf_path=report.pdf_path,
-                    attach_pdf=False  # 暂不附加 PDF，后续可改为 True
+                    report_data=report_data,
+                    attach_pdf=False  # 禁用 PDF 附件
                 )
                 
                 if success:
@@ -175,7 +183,7 @@ class TaskScheduler:
             model=self.ai_config['model'],
             temperature=self.ai_config.get('temperature', 0.7),
             max_tokens=self.ai_config.get('max_tokens', 2000),
-            timeout=self.ai_config.get('timeout', 30),
+            timeout=self.ai_config.get('timeout', 180),  # 默认180秒，确保从配置读取
             max_retries=self.ai_config.get('max_retries', 3)
         )
     

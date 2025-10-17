@@ -150,6 +150,26 @@ async def wordcloud_page(request: Request):
     return templates.TemplateResponse("wordcloud.html", {"request": request})
 
 
+@app.get("/favicon.ico")
+async def favicon():
+    """返回网站图标"""
+    from fastapi.responses import FileResponse, Response
+    import os
+    
+    # 优先使用 .ico 文件
+    favicon_ico = "static/favicon.ico"
+    if os.path.exists(favicon_ico):
+        return FileResponse(favicon_ico, media_type="image/x-icon")
+    
+    # 如果没有 .ico，使用 .svg
+    favicon_svg = "static/favicon.svg"
+    if os.path.exists(favicon_svg):
+        return FileResponse(favicon_svg, media_type="image/svg+xml")
+    
+    # 如果都不存在，返回 204 No Content
+    return Response(status_code=204)
+
+
 @app.get("/health")
 def health_check():
     """健康检查"""

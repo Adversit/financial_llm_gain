@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缓存管理系统 - 示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 缓存管理系统 - 示例演示</h1>
+        
+        <!-- 基本操作 -->
+        <div class="section">
+            <h2>📦 基本操作</h2>
+            <div class="button-group">
+                <button class="btn-primary" onclick="testFetch()">测试缓存请求</button>
+                <button class="btn-primary" onclick="testFetchNoCache()">测试无缓存请求</button>
+                <button class="btn-success" onclick="testSet()">保存到缓存</button>
+                <button class="btn-success" onclick="testGet()">从缓存读取</button>
+                <button class="btn-danger" onclick="testDelete()">删除缓存</button>
+                <button class="btn-danger" onclick="testClear()">清空所有缓存</button>
+            </div>
+            <div id="basicOutput" class="output">等待操作...</div>
+        </div>
+        
+        <!-- 缓存策略 -->
+        <div class="section">
+            <h2>🎯 缓存策略测试</h2>
+            <div class="button-group">
+                <button class="btn-primary" onclick="testCacheFirst()">Cache First</button>
+                <button class="btn-primary" onclick="testNetworkFirst()">Network First</button>
+                <button class="btn-primary" onclick="testStaleWhileRevalidate()">Stale While Revalidate</button>
+            </div>
+            <div id="strategyOutput" class="output">等待操作...</div>
+        </div>
+        
+        <!-- 统计信息 -->
+        <div class="section">
+            <h2>📊 缓存统计</h2>
+            <div class="button-group">
+                <button class="btn-success" onclick="showStats()">刷新统计</button>
+                <button class="btn-success" onclick="showCacheSize()">查看缓存大小</button>
+                <button class="btn-success" onclick="showStorageQuota()">查看存储配额</button>
+                <button class="btn-warning" onclick="generateReport()">生成报告</button>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="hitRate">0%</div>
+                    <div class="stat-label">命中率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRequests">0</div>
+                    <div class="stat-label">总请求数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="hits">0</div>
+                    <div class="stat-label">命中次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="misses">0</div>
+                    <div class="stat-label">未命中次数</div>
+                </div>
+            </div>
+            <div id="statsOutput" class="output">等待操作...</div>
+        </div>
+        
+        <!-- 工具函数 -->
+        <div class="section">
+            <h2>🔧 工具函数</h2>
+            <div class="button-group">
+                <button class="btn-primary" onclick="testPreload()">预加载资源</button>
+                <button class="btn-primary" onclick="testCleanExpired()">清理过期缓存</button>
+                <button class="btn-warning" onclick="checkSupport()">检查浏览器支持</button>
+            </div>
+            <div id="utilsOutput" class="output">等待操作...</div>
+        </div>
+    </div>
+    
+    <!-- 引入缓存管理系统 -->
+    <script src="cache-config.js"></script>
+    <script src="cache-utils.js"></script>
+    <script src="cache-storage.js"></script>
+    <script src="cache-strategy.js"></script>
+    <script src="cache-monitor.js"></script>
+    <script src="index.js"></script>
+    
+    <script>
+        // 获取缓存管理器实例
+        const cache = window.cacheManager;
+        
+        // 输出函数
+        function output(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.textContent = `[${timestamp}] ${message}`;
+        }
+        
+        function appendOutput(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.textContent += `\n[${timestamp}] ${message}`;
+        }
+        
+        // 基本操作测试
+        async function testFetch() {
+            output('basicOutput', '正在测试缓存请求...');
+            try {
+                const response = await cache.fetch('https://jsonplaceholder.typicode.com/posts/1');
+                const data = await response.json();
+                appendOutput('basicOutput', `成功！标题: ${data.title}`);
+                updateStats();
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testFetchNoCache() {
+            output('basicOutput', '正在测试无缓存请求...');
+            try {
+                const response = await cache.fetchNoCache('https://jsonplaceholder.typicode.com/posts/2');
+                const data = await response.json();
+                appendOutput('basicOutput', `成功！标题: ${data.title}`);
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testSet() {
+            output('basicOutput', '正在保存到缓存...');
+            try {
+                await cache.set('testKey', { message: 'Hello Cache!', timestamp: Date.now() });
+                appendOutput('basicOutput', '保存成功！');
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testGet() {
+            output('basicOutput', '正在从缓存读取...');
+            try {
+                const value = await cache.get('testKey');
+                if (value) {
+                    appendOutput('basicOutput', `读取成功: ${JSON.stringify(value)}`);
+                } else {
+                    appendOutput('basicOutput', '缓存中没有找到数据');
+                }
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testDelete() {
+            output('basicOutput', '正在删除缓存...');
+            try {
+                await cache.delete('testKey');
+                appendOutput('basicOutput', '删除成功！');
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testClear() {
+            if (!confirm('确定要清空所有缓存吗？')) return;
+            output('basicOutput', '正在清空所有缓存...');
+            try {
+                await cache.clear();
+                appendOutput('basicOutput', '清空成功！');
+                updateStats();
+            } catch (error) {
+                appendOutput('basicOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        // 策略测试
+        async function testCacheFirst() {
+            output('strategyOutput', '测试 Cache First 策略...');
+            try {
+                const response = await cache.fetch('https://jsonplaceholder.typicode.com/posts/3', {
+                    strategy: 'cache-first',
+                    maxAge: 60000
+                });
+                const data = await response.json();
+                appendOutput('strategyOutput', `成功！标题: ${data.title}`);
+                updateStats();
+            } catch (error) {
+                appendOutput('strategyOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testNetworkFirst() {
+            output('strategyOutput', '测试 Network First 策略...');
+            try {
+                const response = await cache.fetch('https://jsonplaceholder.typicode.com/posts/4', {
+                    strategy: 'network-first'
+                });
+                const data = await response.json();
+                appendOutput('strategyOutput', `成功！标题: ${data.title}`);
+                updateStats();
+            } catch (error) {
+                appendOutput('strategyOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testStaleWhileRevalidate() {
+            output('strategyOutput', '测试 Stale While Revalidate 策略...');
+            try {
+                const response = await cache.fetch('https://jsonplaceholder.typicode.com/posts/5', {
+                    strategy: 'stale-while-revalidate'
+                });
+                const data = await response.json();
+                appendOutput('strategyOutput', `成功！标题: ${data.title}`);
+                updateStats();
+            } catch (error) {
+                appendOutput('strategyOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        // 统计信息
+        function updateStats() {
+            const stats = cache.getStats();
+            document.getElementById('hitRate').textContent = stats.hitRate;
+            document.getElementById('totalRequests').textContent = stats.totalRequests;
+            document.getElementById('hits').textContent = stats.hits;
+            document.getElementById('misses').textContent = stats.misses;
+        }
+        
+        function showStats() {
+            const stats = cache.getStats();
+            output('statsOutput', JSON.stringify(stats, null, 2));
+            updateStats();
+        }
+        
+        async function showCacheSize() {
+            output('statsOutput', '正在计算缓存大小...');
+            const size = await cache.getCacheSize();
+            appendOutput('statsOutput', JSON.stringify(size, null, 2));
+        }
+        
+        async function showStorageQuota() {
+            output('statsOutput', '正在查询存储配额...');
+            const quota = await cache.getStorageQuota();
+            appendOutput('statsOutput', JSON.stringify(quota, null, 2));
+        }
+        
+        async function generateReport() {
+            output('statsOutput', '正在生成报告...');
+            const report = await cache.generateReport();
+            appendOutput('statsOutput', JSON.stringify(report, null, 2));
+        }
+        
+        // 工具函数测试
+        async function testPreload() {
+            output('utilsOutput', '正在预加载资源...');
+            try {
+                const result = await cache.preload([
+                    'https://jsonplaceholder.typicode.com/posts/6',
+                    'https://jsonplaceholder.typicode.com/posts/7'
+                ]);
+                appendOutput('utilsOutput', `预加载完成: ${JSON.stringify(result)}`);
+            } catch (error) {
+                appendOutput('utilsOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        async function testCleanExpired() {
+            output('utilsOutput', '正在清理过期缓存...');
+            try {
+                const cacheNames = await caches.keys();
+                let totalCleaned = 0;
+                for (const name of cacheNames) {
+                    const result = await CacheUtils.cleanExpiredCache(name);
+                    totalCleaned += result.cleaned || 0;
+                }
+                appendOutput('utilsOutput', `清理完成，共清理 ${totalCleaned} 个过期项`);
+            } catch (error) {
+                appendOutput('utilsOutput', `错误: ${error.message}`);
+            }
+        }
+        
+        function checkSupport() {
+            const supported = CacheUtils.getSupportedStorage();
+            output('utilsOutput', `浏览器支持的存储方式:\n${supported.join('\n')}`);
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('缓存管理系统已加载');
+            updateStats();
+        });
+    </script>
+</body>
+</html>
