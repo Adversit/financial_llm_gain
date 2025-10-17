@@ -41,9 +41,13 @@ def list_reports(
     report_summaries = []
     for report in reports:
         # 统计各层面文章数
-        articles = db.query(Article).filter(
-            Article.publish_time >= report.report_date,
-            Article.publish_time < report.report_date
+        from datetime import datetime, timedelta
+        start_time = datetime.combine(report.report_date, datetime.min.time())
+        end_time = start_time + timedelta(days=1)
+        
+        articles = db.query(Article).join(Article.source).filter(
+            Article.publish_time >= start_time,
+            Article.publish_time < end_time
         ).all()
         
         counts = {'政治': 0, '经济': 0, '技术': 0, '金融科技': 0}
@@ -67,6 +71,8 @@ def list_reports(
 @router.get("/{report_date}", response_model=ReportResponse)
 def get_report(report_date: date, db: Session = Depends(get_db)):
     """获取指定日期的报告"""
+    from fastapi import Response
+    
     report = db.query(DailyReport).filter(
         DailyReport.report_date == report_date
     ).first()

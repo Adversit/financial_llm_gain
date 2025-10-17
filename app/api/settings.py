@@ -65,13 +65,11 @@ async def send_email_to_recipients(request: SendEmailRequest):
             if not report:
                 raise HTTPException(status_code=404, detail="报告不存在")
             
-            # 读取HTML报告
-            html_path = Path(report.html_path)
-            if not html_path.exists():
-                raise HTTPException(status_code=404, detail="报告文件不存在")
+            # 获取HTML内容
+            if not report.html_content:
+                raise HTTPException(status_code=404, detail="报告内容不存在")
             
-            with open(html_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
+            html_content = report.html_content
             
             # 发送邮件
             success = email_sender.send_report(

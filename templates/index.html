@@ -1,11 +1,133 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>金融日报系统</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .quick-search {
+            margin-bottom: 1rem;
+        }
+
+        .quick-search input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quick-link {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-link:hover {
+            background: #3498db;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .wordcloud-preview {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .wordcloud-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .wordcloud-preview:hover {
+            opacity: 0.8;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            color: white;
+            text-align: center;
+        }
+
+        .stat-box.blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-box.green {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-box.orange {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-box.purple {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="container">
@@ -17,6 +139,7 @@
                 <li><a href="/sources.html">信息源管理</a></li>
                 <li><a href="/emails.html">邮件管理</a></li>
                 <li><a href="/custom-report.html">个性化报告</a></li>
+                <li><a href="/wordcloud.html">词云展示</a></li>
                 <li><a href="/settings.html">系统设置</a></li>
             </ul>
         </div>
@@ -24,8 +147,60 @@
 
     <div class="container main-content">
         <div class="page-header">
-            <h2>每日报告</h2>
+            <h2>数据概览</h2>
             <button class="btn btn-primary" onclick="generateReport()">生成今日报告</button>
+        </div>
+
+        <!-- 仪表板 -->
+        <div class="dashboard-grid">
+            <!-- 快速搜索 -->
+            <div class="dashboard-card">
+                <h3>🔍 快速搜索</h3>
+                <div class="quick-search">
+                    <input type="text" id="quickSearch" placeholder="搜索关键词、文章..." onkeypress="handleQuickSearch(event)">
+                </div>
+                <div class="quick-links">
+                    <a href="/articles.html" class="quick-link">📰 浏览所有文章</a>
+                    <a href="/wordcloud.html" class="quick-link">🏷️ 查看词云</a>
+                    <a href="/custom-report.html" class="quick-link">📊 个性化报告</a>
+                </div>
+            </div>
+
+            <!-- 词云预览 -->
+            <div class="dashboard-card">
+                <h3>🌈 最新词云</h3>
+                <div id="wordcloudPreview" class="wordcloud-preview" onclick="window.location.href='/wordcloud.html'">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="dashboard-card">
+                <h3>📊 数据统计</h3>
+                <div id="statsOverview" class="stats-overview">
+                    <div class="stat-box blue">
+                        <div class="stat-number" id="totalArticles">-</div>
+                        <div class="stat-label">文章总数</div>
+                    </div>
+                    <div class="stat-box green">
+                        <div class="stat-number" id="totalSources">35</div>
+                        <div class="stat-label">信息源</div>
+                    </div>
+                    <div class="stat-box orange">
+                        <div class="stat-number" id="totalReports">-</div>
+                        <div class="stat-label">报告总数</div>
+                    </div>
+                    <div class="stat-box purple">
+                        <div class="stat-number" id="totalKeywords">-</div>
+                        <div class="stat-label">关键词总数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 报告列表 -->
+        <div class="page-header">
+            <h2>每日报告</h2>
         </div>
 
         <div class="filter-section">
@@ -41,21 +216,89 @@
     <script src="/static/js/main.js"></script>
     <script>
         // 页面加载时获取报告列表
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 设置默认日期为昨天
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             document.getElementById('dateFilter').valueAsDate = yesterday;
-            
+
             loadReports();
+            loadDashboard();
         });
+
+        async function loadDashboard() {
+            // 加载词云预览
+            loadWordcloudPreview();
+
+            // 加载统计数据
+            loadStats();
+        }
+
+        async function loadWordcloudPreview() {
+            const container = document.getElementById('wordcloudPreview');
+
+            try {
+                // 获取最新的词云
+                const response = await fetch('/wordcloud/list');
+                const data = await response.json();
+
+                if (data.wordclouds && data.wordclouds.length > 0) {
+                    // 找到最新的总体词云
+                    const latestWordcloud = data.wordclouds.find(wc => !wc.category && !wc.keyword_type)
+                        || data.wordclouds[0];
+
+                    container.innerHTML = `<img src="${latestWordcloud.url}" alt="最新词云">`;
+                } else {
+                    container.innerHTML = '<div style="color: #7f8c8d;">暂无词云<br><small>生成报告后自动创建</small></div>';
+                }
+            } catch (error) {
+                container.innerHTML = '<div style="color: #7f8c8d;">暂无词云</div>';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                // 获取所有文章总数（不限日期）
+                const articlesResponse = await fetch(`/articles/?limit=1`);
+                const articlesData = await articlesResponse.json();
+                document.getElementById('totalArticles').textContent = articlesData.total || 0;
+
+                // 获取历史报告总数
+                const reportsResponse = await fetch('/reports/?limit=1');
+                const reportsData = await reportsResponse.json();
+                document.getElementById('totalReports').textContent = reportsData.total || 0;
+
+                // 获取所有关键词总数（不限日期）
+                const keywordsResponse = await fetch(`/articles/keywords/all`);
+                const keywordsData = await keywordsResponse.json();
+                document.getElementById('totalKeywords').textContent = keywordsData.total || 0;
+
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+
+        function handleQuickSearch(event) {
+            if (event.key === 'Enter') {
+                const keyword = document.getElementById('quickSearch').value;
+                if (keyword) {
+                    // 跳转到文章列表页面并搜索
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const date = yesterday.toISOString().split('T')[0];
+                    window.location.href = `/articles.html?date=${date}&search=${encodeURIComponent(keyword)}`;
+                }
+            }
+        }
 
         async function loadReports() {
             const container = document.getElementById('reportsList');
             container.innerHTML = '<div class="loading">加载中...</div>';
 
             try {
-                const response = await fetch('/reports/');
+                // 添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/reports/?_t=${timestamp}`);
                 const data = await response.json();
 
                 if (data.reports && data.reports.length > 0) {
@@ -75,10 +318,10 @@
         function createReportCard(report) {
             const card = document.createElement('div');
             card.className = 'report-card';
-            
-            const totalCount = report.political_count + report.economic_count + 
-                             report.technical_count + report.fintech_count;
-            
+
+            const totalCount = report.political_count + report.economic_count +
+                report.technical_count + report.fintech_count;
+
             card.innerHTML = `
                 <div class="report-header">
                     <h3>${report.report_date}</h3>
@@ -108,7 +351,7 @@
                     <button class="btn btn-primary" onclick="sendReport('${report.report_date}')">📧 发送</button>
                 </div>
             `;
-            
+
             return card;
         }
 
@@ -123,7 +366,7 @@
         async function generateReport() {
             const dateInput = document.getElementById('dateFilter');
             const date = dateInput.value;
-            
+
             if (!date) {
                 alert('请选择日期');
                 return;
@@ -135,7 +378,7 @@
 
             try {
                 showLoading('正在生成报告，请稍候...');
-                
+
                 const response = await fetch('/reports/generate', {
                     method: 'POST',
                     headers: {
@@ -148,12 +391,14 @@
                 });
 
                 const result = await response.json();
-                
+
                 hideLoading();
-                
+
                 if (result.success) {
                     alert('报告生成成功！');
                     loadReports();
+                    loadStats();  // 刷新统计数据
+                    loadWordcloudPreview();  // 刷新词云预览
                 } else {
                     alert('报告生成失败: ' + result.message);
                 }
@@ -162,11 +407,12 @@
                 alert('请求失败: ' + error.message);
             }
         }
-        
+
         async function sendReport(date) {
             // 跳转到报告详情页面，在那里可以发送邮件
             window.location.href = `/report-detail.html?date=${date}`;
         }
     </script>
 </body>
+
 </html>

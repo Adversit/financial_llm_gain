@@ -140,6 +140,9 @@
     <div class="container main-content">
         <div class="back-button">
             <button class="btn btn-secondary" onclick="history.back()">← 返回</button>
+            <button class="btn btn-secondary" onclick="location.reload(true)" style="float: right; margin-left: 10px;">
+                � 刷新
+            </button>
             <button class="btn btn-primary" onclick="showSendEmailModal()" style="float: right;">
                 📧 发送报告
             </button>
@@ -208,12 +211,13 @@
             try {
                 showLoading('加载报告详情...');
 
-                // 获取报告数据
-                const response = await fetch(`/reports/${date}`);
+                // 获取报告数据（添加时间戳防止缓存）
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/reports/${date}?_t=${timestamp}`);
                 const report = await response.json();
 
                 // 获取文章数据
-                const articlesResponse = await fetch(`/articles/?date=${date}`);
+                const articlesResponse = await fetch(`/articles/?date=${date}&_t=${timestamp}`);
                 const articlesData = await articlesResponse.json();
 
                 hideLoading();

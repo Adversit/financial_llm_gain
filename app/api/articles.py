@@ -43,6 +43,8 @@ def get_articles(
     date: Optional[str] = Query(None, description="日期 (YYYY-MM-DD)"),
     category: Optional[str] = Query(None, description="层面"),
     source_id: Optional[int] = Query(None, description="信息源ID"),
+    keyword: Optional[str] = Query(None, description="关键词搜索"),
+    keyword_type: Optional[str] = Query(None, description="关键词类型"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -53,6 +55,8 @@ def get_articles(
     - **date**: 筛选日期
     - **category**: 筛选层面
     - **source_id**: 筛选信息源
+    - **keyword**: 关键词搜索
+    - **keyword_type**: 关键词类型（如"公司"、"行业"等）
     - **limit**: 返回数量限制
     - **offset**: 偏移量
     """
@@ -64,7 +68,7 @@ def get_articles(
     # 日期筛选
     if date:
         try:
-            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            target_date = datetime.strptime(date, "%Y-%m-d").date()
             query = query.filter(
                 Article.publish_time >= datetime.combine(target_date, datetime.min.time()),
                 Article.publish_time < datetime.combine(target_date, datetime.max.time())
@@ -79,6 +83,20 @@ def get_articles(
     # 信息源筛选
     if source_id:
         query = query.filter(Article.source_id == source_id)
+    
+    # 关键词筛选
+    if keyword or keyword_type:
+        query = query.join(Article.summaries)
+        if keyword and keyword_type:
+            # 同时筛选关键词和类型
+            query = query.filter(Summary.keywords.like(f'%"word": "{keyword}"%'))
+            query = query.filter(Summary.keywords.like(f'%"type": "{keyword_type}"%'))
+        elif keyword:
+            # 只筛选关键词
+            query = query.filter(Summary.keywords.like(f'%{keyword}%'))
+        elif keyword_type:
+            # 只筛选类型
+            query = query.filter(Summary.keywords.like(f'%"type": "{keyword_type}"%'))
     
     # 排序
     query = query.order_by(Article.publish_time.desc())
@@ -214,6 +232,73 @@ def export_articles(
                 "Content-Disposition": f"attachment; filename={filename}"
             }
         )
+
+
+@router.get("/keywords/all")
+def get_all_keywords(
+    date: Optional[str] = Query(None, description="日期 (YYYY-MM-DD)"),
+    db: Session = Depends(get_db)
+):
+    """
+    获取所有关键词及其类型
+    
+    - **date**: 筛选日期
+    """
+    import json
+    from collections import defaultdict
+    
+    query = db.query(Summary).join(Summary.article)
+    
+    # 日期筛选
+    if date:
+        try:
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            query = query.filter(
+                Article.publish_time >= datetime.combine(target_date, datetime.min.time()),
+                Article.publish_time < datetime.combine(target_date, datetime.max.time())
+            )
+        except ValueError:
+            pass
+    
+    summaries = query.all()
+    
+    # 统计关键词
+    keyword_stats = defaultdict(lambda: {"count": 0, "types": set()})
+    keyword_types = set()
+    
+    for summary in summaries:
+        if summary.keywords:
+            try:
+                keywords = json.loads(summary.keywords)
+                for kw in keywords:
+                    word = kw.get('word', '')
+                    kw_type = kw.get('type', '')
+                    if word:
+                        keyword_stats[word]["count"] += 1
+                        if kw_type:
+                            keyword_stats[word]["types"].add(kw_type)
+                            keyword_types.add(kw_type)
+            except:
+                pass
+    
+    # 转换为列表
+    keywords_list = [
+        {
+            "word": word,
+            "count": stats["count"],
+            "types": list(stats["types"])
+        }
+        for word, stats in keyword_stats.items()
+    ]
+    
+    # 按出现次数排序
+    keywords_list.sort(key=lambda x: x["count"], reverse=True)
+    
+    return {
+        "keywords": keywords_list,
+        "keyword_types": sorted(list(keyword_types)),
+        "total": len(keywords_list)
+    }
 
 
 @router.get("/{article_id}", response_model=ArticleResponse)

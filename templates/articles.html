@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,18 +17,18 @@
             flex-wrap: wrap;
             align-items: center;
         }
-        
+
         .filter-group {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .filter-group label {
             font-weight: 500;
             color: #2c3e50;
         }
-        
+
         .filter-group select,
         .filter-group input {
             padding: 0.5rem;
@@ -35,48 +36,48 @@
             border-radius: 4px;
             font-size: 14px;
         }
-        
+
         .articles-grid {
             display: grid;
             gap: 1rem;
         }
-        
+
         .article-item {
             background: white;
             padding: 1.5rem;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .article-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
-        
+
         .article-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1rem;
         }
-        
+
         .article-title {
             font-size: 18px;
             font-weight: bold;
             color: #2c3e50;
             flex: 1;
         }
-        
+
         .article-title a {
             color: #3498db;
             text-decoration: none;
         }
-        
+
         .article-title a:hover {
             text-decoration: underline;
         }
-        
+
         .category-badge {
             padding: 0.25rem 0.75rem;
             border-radius: 15px;
@@ -85,12 +86,24 @@
             color: white;
             white-space: nowrap;
         }
-        
-        .category-badge.political { background: #f5576c; }
-        .category-badge.economic { background: #00f2fe; }
-        .category-badge.technical { background: #38f9d7; }
-        .category-badge.fintech { background: #fee140; color: #333; }
-        
+
+        .category-badge.political {
+            background: #f5576c;
+        }
+
+        .category-badge.economic {
+            background: #00f2fe;
+        }
+
+        .category-badge.technical {
+            background: #38f9d7;
+        }
+
+        .category-badge.fintech {
+            background: #fee140;
+            color: #333;
+        }
+
         .article-meta {
             display: flex;
             gap: 1.5rem;
@@ -98,27 +111,92 @@
             color: #7f8c8d;
             margin-bottom: 1rem;
         }
-        
+
         .article-summary {
             line-height: 1.7;
             color: #555;
             margin-bottom: 1rem;
         }
-        
+
         .article-keywords {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
-        
+
         .keyword {
             background: #ecf0f1;
             color: #2c3e50;
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
             font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
         }
-        
+
+        .keyword:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .keyword-type {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .keyword-cloud {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .keyword-cloud-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .keyword-cloud-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-cloud-item {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .keyword-cloud-item:hover {
+            background: #3498db;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .keyword-cloud-item.active {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .keyword-count {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 0.125rem 0.5rem;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
         .stats-bar {
             background: white;
             padding: 1rem 1.5rem;
@@ -128,17 +206,18 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .stats-info {
             font-size: 14px;
             color: #7f8c8d;
         }
-        
+
         .back-button {
             margin-bottom: 1.5rem;
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="container">
@@ -185,9 +264,26 @@
                 </select>
             </div>
             <div class="filter-group">
+                <label>关键词类型:</label>
+                <select id="keywordTypeFilter" onchange="filterArticles()">
+                    <option value="">全部类型</option>
+                </select>
+            </div>
+            <div class="filter-group">
                 <label>搜索:</label>
-                <input type="text" id="searchInput" placeholder="搜索标题或内容..." 
-                       oninput="debounceSearch()">
+                <input type="text" id="searchInput" placeholder="搜索标题或内容..." oninput="debounceSearch()">
+            </div>
+            <div class="filter-group">
+                <button class="btn btn-secondary btn-sm" onclick="toggleKeywordCloud()">
+                    <span id="keywordCloudToggle">显示关键词云</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="keywordCloud" class="keyword-cloud" style="display: none;">
+            <div class="keyword-cloud-title">🏷️ 热门关键词（点击筛选）</div>
+            <div id="keywordCloudItems" class="keyword-cloud-items">
+                <div class="loading">加载中...</div>
             </div>
         </div>
 
@@ -210,7 +306,10 @@
     <script>
         let allArticles = [];
         let filteredArticles = [];
-        
+        let allKeywords = [];
+        let selectedKeyword = null;
+        let keywordCloudVisible = false;
+
         const categoryClasses = {
             '政治': 'political',
             '经济': 'economic',
@@ -218,8 +317,10 @@
             '金融科技': 'fintech'
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const date = getUrlParameter('date');
+            const search = getUrlParameter('search');
+
             if (date) {
                 document.getElementById('dateFilter').value = date;
                 document.getElementById('pageTitle').textContent = `文章列表 - ${date}`;
@@ -229,33 +330,39 @@
                 yesterday.setDate(yesterday.getDate() - 1);
                 document.getElementById('dateFilter').valueAsDate = yesterday;
             }
-            
+
+            // 如果有搜索参数，填充搜索框
+            if (search) {
+                document.getElementById('searchInput').value = decodeURIComponent(search);
+            }
+
             loadArticles();
+            loadKeywords();
         });
 
         async function loadArticles() {
             const date = document.getElementById('dateFilter').value;
             if (!date) return;
-            
+
             const container = document.getElementById('articlesList');
             container.innerHTML = '<div class="loading">加载中...</div>';
-            
+
             try {
                 const response = await fetch(`/articles/?date=${date}`);
                 const data = await response.json();
-                
+
                 allArticles = data.articles || [];
                 filteredArticles = allArticles;
-                
+
                 // 更新信息源下拉列表
                 updateSourceFilter();
-                
+
                 // 显示文章
                 displayArticles();
-                
+
                 // 更新标题
                 document.getElementById('pageTitle').textContent = `文章列表 - ${date}`;
-                
+
             } catch (error) {
                 container.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
             }
@@ -264,7 +371,7 @@
         function updateSourceFilter() {
             const sourceFilter = document.getElementById('sourceFilter');
             const sources = [...new Set(allArticles.map(a => a.source_name))].sort();
-            
+
             sourceFilter.innerHTML = '<option value="">全部</option>';
             sources.forEach(source => {
                 const option = document.createElement('option');
@@ -278,17 +385,38 @@
             const category = document.getElementById('categoryFilter').value;
             const source = document.getElementById('sourceFilter').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
-            
+            const keywordType = document.getElementById('keywordTypeFilter').value;
+
             filteredArticles = allArticles.filter(article => {
                 if (category && article.source_category !== category) return false;
                 if (source && article.source_name !== source) return false;
+
+                // 搜索标题、摘要和关键词
                 if (search) {
                     const searchText = (article.title + ' ' + (article.summary || '')).toLowerCase();
-                    if (!searchText.includes(search)) return false;
+                    let keywordsText = '';
+                    try {
+                        const keywords = article.keywords ? JSON.parse(article.keywords) : [];
+                        keywordsText = keywords.map(kw => typeof kw === 'string' ? kw : kw.word).join(' ').toLowerCase();
+                    } catch (e) { }
+
+                    if (!searchText.includes(search) && !keywordsText.includes(search)) return false;
                 }
+
+                // 按关键词类型筛选
+                if (keywordType) {
+                    try {
+                        const keywords = article.keywords ? JSON.parse(article.keywords) : [];
+                        const hasType = keywords.some(kw => kw.type === keywordType);
+                        if (!hasType) return false;
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
                 return true;
             });
-            
+
             displayArticles();
         }
 
@@ -298,27 +426,33 @@
             const container = document.getElementById('articlesList');
             const totalCount = document.getElementById('totalCount');
             const filteredInfo = document.getElementById('filteredInfo');
-            
+
             totalCount.textContent = allArticles.length;
-            
+
             if (filteredArticles.length < allArticles.length) {
                 filteredInfo.textContent = `（筛选后 ${filteredArticles.length} 篇）`;
             } else {
                 filteredInfo.textContent = '';
             }
-            
+
             if (filteredArticles.length === 0) {
                 container.innerHTML = '<div class="empty-state">没有找到文章</div>';
                 return;
             }
-            
+
             container.innerHTML = filteredArticles.map(article => renderArticle(article)).join('');
         }
 
         function renderArticle(article) {
-            const keywords = article.keywords ? JSON.parse(article.keywords) : [];
+            let keywords = [];
+            try {
+                keywords = article.keywords ? JSON.parse(article.keywords) : [];
+            } catch (e) {
+                keywords = [];
+            }
+
             const categoryClass = categoryClasses[article.source_category] || '';
-            
+
             return `
                 <div class="article-item">
                     <div class="article-header">
@@ -336,11 +470,105 @@
                     ` : ''}
                     ${keywords.length > 0 ? `
                         <div class="article-keywords">
-                            ${keywords.map(kw => `<span class="keyword">${kw}</span>`).join('')}
+                            ${keywords.map(kw => renderKeyword(kw)).join('')}
                         </div>
                     ` : ''}
                 </div>
             `;
+        }
+
+        function renderKeyword(kw) {
+            if (typeof kw === 'string') {
+                return `<span class="keyword" onclick="searchByKeyword('${kw}')">${kw}</span>`;
+            } else if (kw.word) {
+                return `<span class="keyword" onclick="searchByKeyword('${kw.word}')" title="${kw.type || ''}">
+                    ${kw.word}
+                    ${kw.type ? `<span class="keyword-type">[${kw.type}]</span>` : ''}
+                </span>`;
+            }
+            return '';
+        }
+
+        function searchByKeyword(keyword) {
+            document.getElementById('searchInput').value = keyword;
+            filterArticles();
+        }
+
+        async function loadKeywords() {
+            const date = document.getElementById('dateFilter').value;
+            if (!date) return;
+
+            try {
+                const response = await fetch(`/articles/keywords/all?date=${date}`);
+                const data = await response.json();
+
+                allKeywords = data.keywords || [];
+
+                // 更新关键词类型下拉列表
+                const keywordTypeFilter = document.getElementById('keywordTypeFilter');
+                keywordTypeFilter.innerHTML = '<option value="">全部类型</option>';
+                (data.keyword_types || []).forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    keywordTypeFilter.appendChild(option);
+                });
+
+                // 更新关键词云
+                updateKeywordCloud();
+
+            } catch (error) {
+                console.error('加载关键词失败:', error);
+            }
+        }
+
+        function updateKeywordCloud() {
+            const container = document.getElementById('keywordCloudItems');
+
+            if (allKeywords.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无关键词</div>';
+                return;
+            }
+
+            // 显示前30个最热门的关键词
+            const topKeywords = allKeywords.slice(0, 30);
+
+            container.innerHTML = topKeywords.map(kw => `
+                <div class="keyword-cloud-item ${selectedKeyword === kw.word ? 'active' : ''}" 
+                     onclick="selectKeyword('${kw.word}')">
+                    <span>${kw.word}</span>
+                    <span class="keyword-count">${kw.count}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectKeyword(keyword) {
+            if (selectedKeyword === keyword) {
+                // 取消选择
+                selectedKeyword = null;
+                document.getElementById('searchInput').value = '';
+            } else {
+                // 选择关键词
+                selectedKeyword = keyword;
+                document.getElementById('searchInput').value = keyword;
+            }
+
+            updateKeywordCloud();
+            filterArticles();
+        }
+
+        function toggleKeywordCloud() {
+            keywordCloudVisible = !keywordCloudVisible;
+            const cloud = document.getElementById('keywordCloud');
+            const toggle = document.getElementById('keywordCloudToggle');
+
+            if (keywordCloudVisible) {
+                cloud.style.display = 'block';
+                toggle.textContent = '隐藏关键词云';
+            } else {
+                cloud.style.display = 'none';
+                toggle.textContent = '显示关键词云';
+            }
         }
 
         function exportArticles() {
@@ -349,4 +577,5 @@
         }
     </script>
 </body>
+
 </html>

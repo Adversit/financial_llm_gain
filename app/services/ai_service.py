@@ -290,6 +290,9 @@ class AIService:
             messages = [{"role": "user", "content": prompt}]
             response = self.client.chat_completion(messages)
             
+            # 记录原始响应（用于调试）
+            self.logger.debug(f"AI原始响应: {response[:500]}")
+            
             # 解析JSON响应
             result = self._parse_json_response(response)
             
@@ -302,7 +305,7 @@ class AIService:
             return result
             
         except Exception as e:
-            self.logger.error(f"生成摘要失败: {e}")
+            self.logger.error(f"生成摘要失败: {e}", exc_info=True)
             # 返回默认值
             return {
                 "summary": f"摘要生成失败: {str(e)}",
@@ -312,6 +315,7 @@ class AIService:
     def generate_daily_report(
         self,
         summaries_by_category: Dict[str, List[str]],
+        articles_data: Optional[List[Dict]] = None,
         prompt_template: Optional[str] = None
     ) -> str:
         """
@@ -319,6 +323,7 @@ class AIService:
         
         Args:
             summaries_by_category: 按层面分组的摘要字典
+            articles_data: 文章数据列表（包含标题、摘要、关键词）
             prompt_template: 自定义提示词模板（可选）
         
         Returns:
@@ -342,13 +347,58 @@ class AIService:
                 summaries_by_category.get('金融科技', [])
             )
             
+            # 提取国内外信息
+            domestic_summaries = []
+            foreign_summaries = []
+            
+            if articles_data:
+                for article in articles_data:
+                    keywords = article.get('keywords', [])
+                    summary = article.get('summary', '')
+                    title = article.get('title', '')
+                    
+                    # 从关键词中判断国内外
+                    is_domestic = False
+                    is_foreign = False
+                    
+                    for kw in keywords:
+                        if isinstance(kw, dict):
+                            word = kw.get('word', '')
+                            kw_type = kw.get('type', '')
+                            if kw_type == '国内外信息':
+                                if word == '国内':
+                                    is_domestic = True
+                                elif word == '国外':
+                                    is_foreign = True
+                    
+                    # 添加到对应列表
+                    if is_domestic and summary:
+                        domestic_summaries.append(f"{title}: {summary}")
+                    if is_foreign and summary:
+                        foreign_summaries.append(f"{title}: {summary}")
+            
+            # 格式化国内外摘要
+            domestic = self._format_summaries(domestic_summaries)
+            foreign = self._format_summaries(foreign_summaries)
+            
             # 构建提示词
             prompt = template.format(
+                domestic_summaries=domestic,
+                foreign_summaries=foreign,
                 political_summaries=political,
                 economic_summaries=economic,
                 technical_summaries=technical,
                 fintech_summaries=fintech
             )
+            
+            # 记录输入内容（用于调试）
+            self.logger.debug(f"报告生成输入 - 国内信息: {len(domestic_summaries)} 条")
+            self.logger.debug(f"报告生成输入 - 国外信息: {len(foreign_summaries)} 条")
+            self.logger.debug(f"报告生成输入 - 政治层面: {political[:200]}...")
+            self.logger.debug(f"报告生成输入 - 经济层面: {economic[:200]}...")
+            self.logger.debug(f"报告生成输入 - 技术层面: {technical[:200]}...")
+            self.logger.debug(f"报告生成输入 - 金融科技层面: {fintech[:200]}...")
+            self.logger.info(f"完整提示词长度: {len(prompt)} 字符")
             
             # 调用AI
             messages = [{"role": "user", "content": prompt}]
@@ -362,7 +412,7 @@ class AIService:
             return response
             
         except Exception as e:
-            self.logger.error(f"生成每日报告失败: {e}")
+            self.logger.error(f"生成每日报告失败: {e}", exc_info=True)
             return f"报告生成失败: {str(e)}"
     
     def _format_summaries(self, summaries: List[str]) -> str:
@@ -408,10 +458,26 @@ class AIService:
             # 尝试直接解析
             return json.loads(response)
         except json.JSONDecodeError:
-            # 尝试提取JSON部分
-            start = response.find('{')
-            end = response.rfind('}') + 1
-            if start != -1 and end > start:
-                json_str = response[start:end]
-                return json.loads(json_str)
-            raise ValueError("无法解析JSON响应")
+            # 移除可能的 markdown 代码块标记
+            cleaned = response.strip()
+            if cleaned.startswith('```'):
+                # 移除开头的 ```json 或 ```
+                lines = cleaned.split('\n')
+                if lines[0].startswith('```'):
+                    lines = lines[1:]
+                # 移除结尾的 ```
+                if lines and lines[-1].strip() == '```':
+                    lines = lines[:-1]
+                cleaned = '\n'.join(lines)
+            
+            # 尝试解析清理后的内容
+            try:
+                return json.loads(cleaned)
+            except json.JSONDecodeError:
+                # 尝试提取JSON部分
+                start = cleaned.find('{')
+                end = cleaned.rfind('}') + 1
+                if start != -1 and end > start:
+                    json_str = cleaned[start:end]
+                    return json.loads(json_str)
+                raise ValueError(f"无法解析JSON响应: {response[:200]}")

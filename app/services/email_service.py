@@ -122,6 +122,9 @@ class EmailSender:
         msg['From'] = f"{self.from_name} <{self.username}>"
         msg['To'] = ', '.join(recipients)
         
+        # 优化 HTML 以适配邮件客户端
+        html_content = self._optimize_html_for_email(html_content)
+        
         # 添加HTML内容
         html_part = MIMEText(html_content, 'html', 'utf-8')
         msg.attach(html_part)
@@ -147,6 +150,42 @@ class EmailSender:
                 self.logger.warning(f"添加PDF附件失败: {e}")
         
         return msg
+    
+    def _optimize_html_for_email(self, html_content: str) -> str:
+        """
+        优化 HTML 以适配邮件客户端
+        
+        Args:
+            html_content: 原始 HTML
+        
+        Returns:
+            优化后的 HTML
+        """
+        # 为段落添加间距
+        html_content = html_content.replace('<p>', '<p style="margin-bottom: 15px; line-height: 1.8;">')
+        
+        # 为标题添加间距和样式
+        html_content = html_content.replace(
+            '<h3>',
+            '<h3 style="margin-top: 25px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1; color: #2c3e50;">'
+        )
+        html_content = html_content.replace(
+            '<h4>',
+            '<h4 style="margin-top: 20px; margin-bottom: 12px; color: #34495e;">'
+        )
+        
+        # 为列表添加间距
+        html_content = html_content.replace('<ul>', '<ul style="margin-top: 10px; margin-bottom: 20px; margin-left: 25px;">')
+        html_content = html_content.replace('<ol>', '<ol style="margin-top: 10px; margin-bottom: 20px; margin-left: 25px;">')
+        html_content = html_content.replace('<li>', '<li style="margin-bottom: 12px; line-height: 1.8;">')
+        
+        # 为分隔线添加间距
+        html_content = html_content.replace('<hr>', '<hr style="margin: 30px 0; border: none; border-top: 2px solid #ecf0f1;">')
+        
+        # 为 strong 标签添加样式
+        html_content = html_content.replace('<strong>', '<strong style="color: #2c3e50; font-weight: bold;">')
+        
+        return html_content
     
     def _send_message(self, msg: MIMEMultipart, recipients: List[str]):
         """

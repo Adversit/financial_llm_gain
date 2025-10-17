@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词云展示 - 金融日报系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .wordcloud-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .wordcloud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .wordcloud-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .wordcloud-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .wordcloud-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+        
+        .wordcloud-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .wordcloud-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .wordcloud-item-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .wordcloud-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            background: #3498db;
+        }
+        
+        .wordcloud-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .wordcloud-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .wordcloud-meta {
+            margin-top: 1rem;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #3498db;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>📊 金融日报系统</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">首页</a></li>
+                <li><a href="/sources.html">信息源管理</a></li>
+                <li><a href="/emails.html">邮件管理</a></li>
+                <li><a href="/custom-report.html">个性化报告</a></li>
+                <li><a href="/wordcloud.html" class="active">词云展示</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="page-header">
+            <h2>🏷️ 关键词词云</h2>
+            <p>可视化展示每日热门关键词</p>
+        </div>
+
+        <div class="wordcloud-container">
+            <div class="wordcloud-filters">
+                <div class="filter-group">
+                    <label>日期:</label>
+                    <input type="date" id="dateFilter" onchange="loadWordclouds()">
+                </div>
+                <div class="filter-group">
+                    <label>层面:</label>
+                    <select id="categoryFilter" onchange="filterWordclouds()">
+                        <option value="">全部</option>
+                        <option value="政治">🏛️ 政治</option>
+                        <option value="经济">💰 经济</option>
+                        <option value="技术">🔬 技术</option>
+                        <option value="金融科技">💳 金融科技</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>关键词类型:</label>
+                    <select id="typeFilter" onchange="filterWordclouds()">
+                        <option value="">全部</option>
+                        <option value="公司">公司</option>
+                        <option value="行业">行业</option>
+                        <option value="经济指标">经济指标</option>
+                        <option value="市场动态">市场动态</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-primary" onclick="generateWordcloud()">生成词云</button>
+                </div>
+            </div>
+
+            <div id="wordcloudGrid" class="wordcloud-grid">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片模态框 -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let allWordclouds = [];
+        let filteredWordclouds = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示昨天
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('dateFilter').valueAsDate = yesterday;
+            
+            loadWordclouds();
+        });
+
+        async function loadWordclouds() {
+            const date = document.getElementById('dateFilter').value;
+            if (!date) return;
+            
+            const container = document.getElementById('wordcloudGrid');
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            
+            try {
+                const response = await fetch(`/wordcloud/list?date=${date}`);
+                const data = await response.json();
+                
+                allWordclouds = data.wordclouds || [];
+                filteredWordclouds = allWordclouds;
+                
+                displayWordclouds();
+                
+            } catch (error) {
+                container.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+            }
+        }
+
+        function filterWordclouds() {
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            
+            filteredWordclouds = allWordclouds.filter(wc => {
+                if (category && wc.category !== category) return false;
+                if (type && wc.keyword_type !== type) return false;
+                return true;
+            });
+            
+            displayWordclouds();
+        }
+
+        function displayWordclouds() {
+            const container = document.getElementById('wordcloudGrid');
+            
+            if (filteredWordclouds.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无词云数据<br><button class="btn btn-primary" onclick="generateWordcloud()">生成词云</button></div>';
+                return;
+            }
+            
+            container.innerHTML = filteredWordclouds.map(wc => renderWordcloud(wc)).join('');
+        }
+
+        function renderWordcloud(wc) {
+            let title = '总体词云';
+            let badge = '';
+            
+            if (wc.category) {
+                title = `${wc.category} 词云`;
+                badge = wc.category;
+            } else if (wc.keyword_type) {
+                title = `${wc.keyword_type} 词云`;
+                badge = wc.keyword_type;
+            }
+            
+            return `
+                <div class="wordcloud-item">
+                    <div class="wordcloud-item-header">
+                        <div class="wordcloud-item-title">${title}</div>
+                        ${badge ? `<span class="wordcloud-badge">${badge}</span>` : ''}
+                    </div>
+                    <img src="${wc.url}" 
+                         alt="${title}" 
+                         class="wordcloud-image"
+                         onclick="showModal('${wc.url}')">
+                    <div class="wordcloud-meta">
+                        📅 ${wc.date}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function generateWordcloud() {
+            const date = document.getElementById('dateFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            
+            if (!date) {
+                alert('请选择日期');
+                return;
+            }
+            
+            try {
+                const params = new URLSearchParams({ date });
+                if (category) params.append('category', category);
+                if (type) params.append('keyword_type', type);
+                
+                const response = await fetch(`/wordcloud/generate?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('词云生成成功！');
+                    loadWordclouds();
+                } else {
+                    alert('词云生成失败');
+                }
+            } catch (error) {
+                alert(`生成失败: ${error.message}`);
+            }
+        }
+
+        function showModal(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageUrl;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

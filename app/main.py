@@ -83,10 +83,11 @@ app.include_router(sources.router)
 app.include_router(emails.router)
 app.include_router(custom_reports.router)
 
-# 导入并注册文章API和设置API
-from app.api import articles, settings
+# 导入并注册文章API、设置API和词云API
+from app.api import articles, settings, wordcloud
 app.include_router(articles.router)
 app.include_router(settings.router)
+app.include_router(wordcloud.router)
 
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -141,6 +142,12 @@ async def custom_report_page(request: Request):
 async def settings_page(request: Request):
     """系统设置页面"""
     return templates.TemplateResponse("settings.html", {"request": request})
+
+
+@app.get("/wordcloud.html", response_class=HTMLResponse)
+async def wordcloud_page(request: Request):
+    """词云展示页面"""
+    return templates.TemplateResponse("wordcloud.html", {"request": request})
 
 
 @app.get("/health")

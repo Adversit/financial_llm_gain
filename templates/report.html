@@ -238,7 +238,7 @@
                     {% if article.keywords %}
                     <div class="article-keywords">
                         {% for keyword in article.keywords %}
-                        <span class="keyword">{{ keyword }}</span>
+                        <span class="keyword">{{ keyword.word if keyword is mapping else keyword }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -280,7 +280,7 @@
                     {% if article.keywords %}
                     <div class="article-keywords">
                         {% for keyword in article.keywords %}
-                        <span class="keyword">{{ keyword }}</span>
+                        <span class="keyword">{{ keyword.word if keyword is mapping else keyword }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -322,7 +322,7 @@
                     {% if article.keywords %}
                     <div class="article-keywords">
                         {% for keyword in article.keywords %}
-                        <span class="keyword">{{ keyword }}</span>
+                        <span class="keyword">{{ keyword.word if keyword is mapping else keyword }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -364,7 +364,7 @@
                     {% if article.keywords %}
                     <div class="article-keywords">
                         {% for keyword in article.keywords %}
-                        <span class="keyword">{{ keyword }}</span>
+                        <span class="keyword">{{ keyword.word if keyword is mapping else keyword }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
