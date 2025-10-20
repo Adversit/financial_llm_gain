@@ -31,71 +31,109 @@ class ReportFormatter:
     
     def format_summary_to_html(self, text: str) -> str:
         """
-        将 AI 生成的文本格式转换为 HTML
+        将 AI 生成的文本格式转换为带内联样式的美观 HTML
+        这样生成的 HTML 可以：
+        1. 在静态文件中直接美观显示
+        2. 在邮件中正确显示（邮件客户端需要内联样式）
+        3. 在前端页面中被 CSS 覆盖以实现更丰富的效果
         
         Args:
             text: 原始文本
         
         Returns:
-            HTML 格式文本
+            带内联样式的 HTML 格式文本
         """
         # 处理分隔线
-        text = text.replace('---', '<hr>')
-        text = text.replace('___', '<hr>')
+        text = text.replace('---', '<hr style="margin: 30px 0; border: none; border-top: 2px solid #ecf0f1;">')
+        text = text.replace('___', '<hr style="margin: 30px 0; border: none; border-top: 2px solid #ecf0f1;">')
         
         # 处理 Markdown 标题 (### 标题)
-        text = re.sub(r'^###\s+(.+?)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
-        text = re.sub(r'^##\s+(.+?)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
-        text = re.sub(r'^#\s+(.+?)$', r'<h1>\1</h1>', text, flags=re.MULTILINE)
+        text = re.sub(
+            r'^###\s+(.+?)$',
+            r'<h3 style="margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1; color: #2c3e50; font-size: 20px; font-weight: bold; line-height: 1.4;">\1</h3>',
+            text,
+            flags=re.MULTILINE
+        )
+        text = re.sub(
+            r'^##\s+(.+?)$',
+            r'<h2 style="margin: 25px 0 15px 0; color: #2c3e50; font-size: 24px; font-weight: bold; line-height: 1.4;">\1</h2>',
+            text,
+            flags=re.MULTILINE
+        )
+        text = re.sub(
+            r'^#\s+(.+?)$',
+            r'<h1 style="margin: 30px 0 20px 0; color: #2c3e50; font-size: 28px; font-weight: bold; line-height: 1.4;">\1</h1>',
+            text,
+            flags=re.MULTILINE
+        )
         
         # 处理标题（一、二、三、四）- 先处理，避免被粗体标记影响
-        text = re.sub(r'^\*\*(一、|二、|三、|四、)(.+?)\*\*\s*$', r'<h3>\1\2</h3>', text, flags=re.MULTILINE)
+        text = re.sub(
+            r'^\*\*(一、|二、|三、|四、)(.+?)\*\*\s*$',
+            r'<h3 style="margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1; color: #2c3e50; font-size: 20px; font-weight: bold; line-height: 1.4;">\1\2</h3>',
+            text,
+            flags=re.MULTILINE
+        )
         
         # 处理子标题（【xxx】）- 先处理
-        text = re.sub(r'\*\*【(.+?)】\*\*', r'<h4>【\1】</h4>', text)
+        text = re.sub(
+            r'\*\*【(.+?)】\*\*',
+            r'<h4 style="margin: 20px 0 12px 0; color: #34495e; font-size: 18px; font-weight: bold; line-height: 1.4;">【\1】</h4>',
+            text
+        )
         
         # 处理粗体（**文本**）
-        text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+        text = re.sub(
+            r'\*\*(.+?)\*\*',
+            r'<strong style="color: #2c3e50; font-weight: bold;">\1</strong>',
+            text
+        )
         
         # 处理列表项（- 开头）
         lines = text.split('\n')
         in_list = False
+        list_type = None  # 'ul' or 'ol'
         result_lines = []
         
         for line in lines:
             stripped = line.strip()
             
-            # 列表项
+            # 无序列表项
             if stripped.startswith('- '):
-                if not in_list:
-                    result_lines.append('<ul>')
+                if not in_list or list_type != 'ul':
+                    if in_list:
+                        # 关闭之前的列表
+                        result_lines.append(f'</{list_type}>')
+                    result_lines.append('<ul style="margin: 15px 0 20px 0; padding-left: 25px; list-style-type: disc;">')
                     in_list = True
-                result_lines.append(f'<li>{stripped[2:]}</li>')
-            # 数字列表项
+                    list_type = 'ul'
+                result_lines.append(f'<li style="margin-bottom: 12px; line-height: 1.8; color: #333; font-size: 14px;">{stripped[2:]}</li>')
+            # 有序列表项
             elif re.match(r'^\d+\.\s', stripped):
-                if not in_list:
-                    result_lines.append('<ol>')
+                if not in_list or list_type != 'ol':
+                    if in_list:
+                        # 关闭之前的列表
+                        result_lines.append(f'</{list_type}>')
+                    result_lines.append('<ol style="margin: 15px 0 20px 0; padding-left: 25px;">')
                     in_list = True
+                    list_type = 'ol'
                 content = re.sub(r'^\d+\.\s', '', stripped)
-                result_lines.append(f'<li>{content}</li>')
+                result_lines.append(f'<li style="margin-bottom: 12px; line-height: 1.8; color: #333; font-size: 14px;">{content}</li>')
             else:
                 if in_list:
-                    # 判断是 ul 还是 ol
-                    if result_lines and '<ul>' in result_lines[-10:]:
-                        result_lines.append('</ul>')
-                    elif result_lines and '<ol>' in result_lines[-10:]:
-                        result_lines.append('</ol>')
+                    result_lines.append(f'</{list_type}>')
                     in_list = False
+                    list_type = None
                 
                 # 普通段落
                 if stripped and not stripped.startswith('<'):
-                    result_lines.append(f'<p>{line}</p>')
+                    result_lines.append(f'<p style="margin: 0 0 15px 0; line-height: 1.8; color: #333; font-size: 14px;">{line}</p>')
                 else:
                     result_lines.append(line)
         
         # 关闭未关闭的列表
         if in_list:
-            result_lines.append('</ul>')
+            result_lines.append(f'</{list_type}>')
         
         return '\n'.join(result_lines)
     

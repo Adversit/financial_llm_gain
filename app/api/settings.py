@@ -65,17 +65,17 @@ async def send_email_to_recipients(request: SendEmailRequest):
             if not report:
                 raise HTTPException(status_code=404, detail="报告不存在")
             
-            # 获取HTML内容
             if not report.html_content:
                 raise HTTPException(status_code=404, detail="报告内容不存在")
             
-            html_content = report.html_content
+            # 直接使用 html_content（和静态 HTML 文件内容相同）
+            report_date_obj = date.fromisoformat(request.report_date)
             
             # 发送邮件
             success = email_sender.send_report(
                 recipients=request.recipients,
-                report_date=date.fromisoformat(request.report_date),
-                html_content=html_content,
+                report_date=report_date_obj,
+                html_content=report.html_content,
                 pdf_path=report.pdf_path if request.attach_pdf else None,
                 attach_pdf=request.attach_pdf
             )

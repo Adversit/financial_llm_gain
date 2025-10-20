@@ -35,47 +35,65 @@
             padding: 2rem;
             border-radius: 10px;
             margin-bottom: 3rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .overall-summary h3 {
             margin-top: 0;
             margin-bottom: 1.5rem;
             font-size: 24px;
-            border-bottom: 2px solid rgba(255,255,255,0.3);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
             padding-bottom: 0.5rem;
         }
 
         .summary-content {
             line-height: 1.8;
             font-size: 16px;
+            color: white !important;
+        }
+
+        /* 覆盖内联样式，将所有文字改为白色（仅前端生效） */
+        .summary-content * {
+            color: white !important;
         }
 
         .summary-content h3 {
-            color: #fff;
+            color: #fff !important;
             margin-top: 1.5rem;
             margin-bottom: 1rem;
             font-size: 20px;
+            border-bottom-color: rgba(255, 255, 255, 0.3) !important;
         }
 
         .summary-content h4 {
-            color: #f0f0f0;
+            color: #f0f0f0 !important;
             margin-top: 1rem;
             margin-bottom: 0.5rem;
             font-size: 18px;
         }
 
-        .summary-content ul, .summary-content ol {
+        .summary-content ul,
+        .summary-content ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
 
         .summary-content li {
             margin-bottom: 0.5rem;
+            color: white !important;
         }
 
         .summary-content p {
             margin-bottom: 1rem;
+            color: white !important;
+        }
+
+        .summary-content strong {
+            color: white !important;
+        }
+
+        .summary-content hr {
+            border-top-color: rgba(255, 255, 255, 0.3) !important;
         }
 
         .summary-content strong {

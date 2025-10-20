@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>金融日报 - {{ report_date }}</title>
+</head>
+
+<body
+    style="margin: 0; padding: 0; font-family: 'Microsoft YaHei','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC',Arial,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4f6f9">
+        <tr>
+            <td align="center" style="padding: 30px 15px;">
+                <!-- 主容器 -->
+                <table width="680" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+
+                    <!-- 顶部品牌条 -->
+                    <tr>
+                        <td bgcolor="#1a237e" style="padding: 4px;"></td>
+                    </tr>
+
+                    <!-- 头部 -->
+                    <tr>
+                        <td bgcolor="#ffffff" style="padding: 35px 30px 25px 30px; border-bottom: 2px solid #e8eaf0;">
+                            <h1 style="margin: 0; font-size: 28px; color: #1a237e; font-weight: bold;">📊 金融日报</h1>
+                            <p style="margin: 8px 0 0 0; font-size: 14px; color: #64748b;">{{ report_date }} · 每日精选资讯
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- 总体总结 -->
+                    {% if overall_summary %}
+                    <tr>
+                        <td style="padding: 25px 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f8fafc">
+                                <tr>
+                                    <td bgcolor="#2563eb" style="padding: 0; width: 4px;"></td>
+                                    <td style="padding: 20px 22px;">
+                                        <h3
+                                            style="margin: 0 0 14px 0; color: #1e293b; font-size: 17px; font-weight: bold;">
+                                            📋 每日综述</h3>
+                                        <div style="font-size: 14px; line-height: 1.75; color: #475569;">{{
+                                            overall_summary | safe }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <!-- 各层面内容 -->
+                    {% for category_name, category_data in categories.items() %}
+                    {% if category_data.articles %}
+
+                    <!-- 层面分隔线 -->
+                    <tr>
+                        <td style="padding: 0 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td bgcolor="#cbd5e1" style="padding: 1px; margin: 15px 0;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- 层面标题 -->
+                    <tr>
+                        <td style="padding: 20px 30px 15px 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td bgcolor="{{ category_data.color }}" style="padding: 14px 20px;">
+                                        <h2 style="margin: 0; font-size: 18px; color: #ffffff; font-weight: bold;">
+                                            {{ category_data.icon }} {{ category_name }}层面
+                                            <span style="font-size: 14px; font-weight: normal;">({{
+                                                category_data.articles|length }} 篇)</span>
+                                        </h2>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- 层面总结 -->
+                    {% if category_data.summary %}
+                    <tr>
+                        <td style="padding: 0 30px 15px 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#fafbfc">
+                                <tr>
+                                    <td bgcolor="{{ category_data.color }}" style="padding: 0; width: 3px;"></td>
+                                    <td style="padding: 16px 18px;">
+                                        <p
+                                            style="margin: 0 0 10px 0; font-size: 13px; font-weight: bold; color: #334155;">
+                                            层面总结</p>
+                                        <div style="font-size: 14px; line-height: 1.7; color: #475569;">{{
+                                            category_data.summary | safe }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <!-- 文章列表 -->
+                    {% for article in category_data.articles %}
+                    <tr>
+                        <td style="padding: 0 30px 18px 30px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="1" bordercolor="#e2e8f0"
+                                bgcolor="#ffffff">
+                                <tr>
+                                    <td style="padding: 18px 20px;">
+                                        <!-- 文章序号和标题 -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td width="35" valign="top">
+                                                    <table cellpadding="0" cellspacing="0" border="0">
+                                                        <tr>
+                                                            <td bgcolor="{{ category_data.color }}" align="center"
+                                                                style="width: 26px; height: 26px; color: #ffffff; font-size: 13px; font-weight: bold;">
+                                                                {{ loop.index }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top">
+                                                    <p
+                                                        style="margin: 0 0 10px 0; font-size: 16px; font-weight: bold; line-height: 1.4; color: #1e293b;">
+                                                        {{ article.title }}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!-- 元信息 -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f8fafc"
+                                            style="margin: 0 0 12px 0;">
+                                            <tr>
+                                                <td style="padding: 8px 12px;">
+                                                    <p style="margin: 0; font-size: 12px; color: #64748b;">
+                                                        <span style="color: #475569; font-weight: bold;">📰 {{
+                                                            article.source }}</span>
+                                                        <span style="margin: 0 8px; color: #94a3b8;">|</span>
+                                                        <span>🕐 {{ article.publish_time }}</span>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!-- 摘要 -->
+                                        {% if article.summary %}
+                                        <p
+                                            style="margin: 0 0 12px 0; font-size: 14px; line-height: 1.7; color: #475569;">
+                                            {{ article.summary }}
+                                        </p>
+                                        {% endif %}
+
+                                        <!-- 关键词 -->
+                                        {% if article.keywords %}
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                            style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                                            <tr>
+                                                <td>
+                                                    {% for keyword in article.keywords %}
+                                                    <span
+                                                        style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 5px 12px; font-size: 12px; font-weight: bold; margin: 0 6px 6px 0;">{{
+                                                        keyword }}</span>
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        {% endif %}
+
+                                        <!-- 查看链接 -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                            style="margin-top: 12px;">
+                                            <tr>
+                                                <td align="right">
+                                                    <a href="{{ article.link }}"
+                                                        style="color: #2563eb; text-decoration: none; font-size: 13px; font-weight: bold;">查看详情
+                                                        →</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% endif %}
+                    {% endfor %}
+
+                    <!-- 页脚 -->
+                    <tr>
+                        <td bgcolor="#f8fafc"
+                            style="padding: 25px 30px; text-align: center; border-top: 2px solid #e8eaf0;">
+                            <p style="margin: 0 0 8px 0; font-size: 13px; color: #475569;">
+                                <strong style="color: #334155;">金融日报系统</strong> · 智能资讯聚合
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">
+                                生成时间：{{ generated_at }}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- 底部品牌条 -->
+                    <tr>
+                        <td bgcolor="#1a237e" style="padding: 4px;"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
