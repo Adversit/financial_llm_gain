@@ -1,0 +1,357 @@
+# 信息源种子数据
+# 格式: name, url, type, region, category, authority_score, enabled
+# authority_score分级: high(80-100), normal(50-79), watch(30-49), quarantine(0-29)
+#
+# 根据constitution.md原则V定义:
+# - high: 政府官方/主流金融媒体, 优先采集, 首屏展示
+# - normal: 专业媒体/垂直领域权威, 正常采集
+# - watch: 新源/区域性媒体, 配额减半, 7日观察期
+# - quarantine: 频繁失败/内容质量差, 暂停采集
+
+sources:
+  # ========== 政府官方源 (authority_score: 90-95) ==========
+  - name: "中国人民银行"
+    url: "rsshub://gov/pbc/zcyj"
+    type: "rsshub"
+    region: "CN"
+    category: "政治"
+    authority_score: 95
+    enabled: true
+    description: "央行政策研究与发布"
+
+  - name: "中央金融委员会办公室"
+    url: "rsshub://gov/pbc/zcyj"  # 注意: 与人民银行路由相同,需确认
+    type: "rsshub"
+    region: "CN"
+    category: "政治"
+    authority_score: 95
+    enabled: true
+    description: "中央金融工作委员会"
+
+  - name: "中国证券监督管理委员会"
+    url: "http://www.csrc.gov.cn/"
+    type: "custom"
+    region: "CN"
+    category: "政治"
+    authority_score: 95
+    enabled: true
+    crawler: "CSRCCrawler"
+    description: "证监会官方网站"
+
+  - name: "国家发展和改革委员会"
+    url: "rsshub://gov/ndrc/zfxxgk"
+    type: "rsshub"
+    region: "CN"
+    category: "政治"
+    authority_score: 92
+    enabled: true
+    description: "国家发改委政府信息公开"
+
+  - name: "国家统计局"
+    url: "rsshub://gov/stats"
+    type: "rsshub"
+    region: "CN"
+    category: "政治"
+    authority_score: 92
+    enabled: true
+    description: "国家统计数据发布"
+
+  - name: "中国人民银行金融基础数据中心"
+    url: "rsshub://gov/pbc/zcyj"  # 注意: 与人民银行路由相同,需确认
+    type: "rsshub"
+    region: "CN"
+    category: "政治"
+    authority_score: 90
+    enabled: true
+    description: "央行金融数据中心"
+
+  # ========== 主流财经媒体 (authority_score: 75-88) ==========
+  - name: "财新网"
+    url: "rsshub://caixin/latest"
+    type: "rsshub"
+    region: "CN"
+    category: "经济"
+    authority_score: 88
+    enabled: true
+    description: "财新传媒,专业财经新闻"
+
+  - name: "第一财经"
+    url: "https://www.yicai.com/"
+    type: "custom"
+    region: "CN"
+    category: "经济"
+    authority_score: 85
+    enabled: true
+    crawler: "YicaiCrawler"
+    description: "第一财经,上海东方传媒集团"
+
+  - name: "中国金融杂志"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3083052239.rss"
+    type: "rss"
+    region: "CN"
+    category: "经济"
+    authority_score: 82
+    enabled: true
+    description: "中国金融杂志官方公众号"
+
+  - name: "虎嗅"
+    url: "rsshub://huxiu/moment"
+    type: "rsshub"
+    region: "CN"
+    category: "经济"
+    authority_score: 75
+    enabled: true
+    description: "虎嗅网,商业科技资讯"
+
+  # ========== 金融科技专业媒体 (authority_score: 65-78) ==========
+  - name: "移动支付网"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_2391444100.rss"
+    type: "rss"
+    region: "CN"
+    category: "金融科技"
+    authority_score: 78
+    enabled: true
+    description: "支付行业专业媒体"
+
+  - name: "金融监管研究"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3008848437.rss"
+    type: "rss"
+    region: "CN"
+    category: "政治"
+    authority_score: 75
+    enabled: true
+    description: "金融监管政策研究"
+
+  - name: "消金界"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3560767185.rss"
+    type: "rss"
+    region: "CN"
+    category: "金融科技"
+    authority_score: 72
+    enabled: true
+    description: "消费金融行业媒体"
+
+  - name: "BigQuant"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3282383876.rss"
+    type: "rss"
+    region: "CN"
+    category: "金融科技"
+    authority_score: 70
+    enabled: true
+    description: "量化投资技术平台"
+
+  - name: "人工智能量化实验室"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3576660523.rss"
+    type: "rss"
+    region: "CN"
+    category: "金融科技"
+    authority_score: 68
+    enabled: true
+    description: "AI量化投资研究"
+
+  - name: "Z Finance"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3077513391.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 65
+    enabled: true
+    description: "金融科技资讯"
+
+  # ========== 科技媒体 - AI/深度学习 (authority_score: 70-78) ==========
+  - name: "机器之心"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3073282833.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 78
+    enabled: true
+    description: "专业AI媒体,技术深度报道"
+
+  - name: "量子位"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3236757533.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 78
+    enabled: true
+    description: "专业AI媒体,行业资讯"
+
+  - name: "新智元"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3271041950.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 76
+    enabled: true
+    description: "AI产业媒体"
+
+  - name: "AI科技评论"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3098132220.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 75
+    enabled: true
+    description: "雷锋网旗下AI媒体"
+
+  - name: "AI前线"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3554086560.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 72
+    enabled: true
+    description: "InfoQ旗下AI媒体"
+
+  - name: "深度学习与NLP"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3214834875.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 70
+    enabled: true
+    description: "NLP技术分享社区"
+
+  # ========== 科技媒体 - 综合 (authority_score: 68-75) ==========
+  - name: "智东西"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3081486433.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 75
+    enabled: true
+    description: "智能硬件与科技媒体"
+
+  - name: "DeepTech深科技"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3075228534.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 73
+    enabled: true
+    description: "麻省理工科技评论中国版"
+
+  - name: "甲子光年"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3599245772.rss"
+    type: "rss"
+    region: "CN"
+    category: "经济"
+    authority_score: 72
+    enabled: true
+    description: "科技产业媒体"
+
+  - name: "硅星人PRO"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3926568365.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 70
+    enabled: true
+    description: "硅谷科技资讯"
+
+  - name: "光子星球"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3082518302.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 68
+    enabled: true
+    description: "科技商业媒体"
+
+  - name: "脑极体"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3515522183.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 68
+    enabled: true
+    description: "AI产业观察"
+
+  - name: "数据猿"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3283796271.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 68
+    enabled: true
+    description: "大数据产业媒体"
+
+  # ========== 科技媒体 - 应用类 (authority_score: 58-65) ==========
+  - name: "AIGC开放社区"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3873892677.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 65
+    enabled: true
+    description: "AIGC技术与应用"
+
+  - name: "赛博禅心"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_3934419561.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 60
+    enabled: true
+    description: "科技人文观察"
+
+  - name: "APPSO"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_2392024520.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 58
+    enabled: true
+    description: "爱范儿旗下应用推荐"
+
+  # ========== 学术/行业组织 (authority_score: 70-75) ==========
+  - name: "中国人工智能学会"
+    url: "http://101.42.187.241:8001/feed/MP_WXS_2398206135.rss"
+    type: "rss"
+    region: "CN"
+    category: "技术"
+    authority_score: 75
+    enabled: true
+    description: "CAAI官方学会公众号"
+
+  - name: "arXiv 计算金融"
+    url: "rsshub://papers/category/arxiv/cs.AI"
+    type: "rsshub"
+    region: "INTL"
+    category: "技术"
+    authority_score: 70
+    enabled: true
+    description: "arXiv论文预印本,AI分类"
+
+  # ========== 国际源 (authority_score: 65-70) ==========
+  - name: "TechCrunch"
+    url: "rsshub://techcrunch/news"
+    type: "rsshub"
+    region: "US"
+    category: "技术"
+    authority_score: 70
+    enabled: true
+    description: "美国科技创投媒体"
+
+# 统计信息:
+# 总源数: 35
+# 政府官方(90-95): 6源
+# 主流财经(75-88): 4源
+# 金融科技(65-78): 6源
+# 科技AI(70-78): 6源
+# 科技综合(68-75): 7源
+# 科技应用(58-65): 3源
+# 学术组织(70-75): 2源
+# 国际源(65-70): 1源
+#
+# authority_score分布:
+# high(80-100): 9源 (25.7%) - 政府+主流财经
+# normal(50-79): 26源 (74.3%) - 专业媒体+科技媒体
+# watch(30-49): 0源
+# quarantine(0-29): 0源
+#
+# 需要注意:
+# 1. RSSHub路由重复问题: 人民银行/金融委/数据中心共用同一route,需要分别配置
+# 2. 自定义爬虫: CSRC/Yicai需要实现对应的crawler类
+# 3. RSS源依赖外部服务101.42.187.241:8001,需确保稳定性
